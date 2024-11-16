@@ -1,0 +1,12 @@
+{
+  // 保存時に自動でフォーマットを適用
+  "editor.formatOnSave": true,
+  // Go 言語用のフォーマッターを gofmt に設定
+  "go.formatTool": "gofmt",
+  // Go ファイルに特化した設定
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.tabSize": 4, // インデントをスペース4つに設定
+    "editor.insertSpaces": true // スペースを使用する設定
+  }
+}

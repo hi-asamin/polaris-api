@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgis/postgis:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dev_polaris_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data # PostgreSQLデータをローカルにマウント
+
+  app:
+    build:
+      context: ./app
+      platform: linux/amd64
+    depends_on:
+      - database
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@database:5432/dev_polaris_db?sslmode=disable"
+    ports:
+      - "8080:8080"
