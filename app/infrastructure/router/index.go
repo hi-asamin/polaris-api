@@ -27,6 +27,7 @@ func Init() {
 
 	// Router
 	PlaceRouter(g)
+	CategoryRouter(g)
 
 	// サーバーを起動
 	if err := r.Run(":8080"); err != nil {
