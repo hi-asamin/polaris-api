@@ -17,6 +17,7 @@ func (e *AppError) Error() string {
 
 // Wrap は既存のエラーをラップして AppError を作成します
 func Wrap(err error, code int, message string) *AppError {
+	log.Printf("%s: %v", message, err)
 	return &AppError{
 		Code:    code,
 		Message: message,
@@ -26,6 +27,7 @@ func Wrap(err error, code int, message string) *AppError {
 
 // New は新しい AppError を作成します
 func New(code int, message string) *AppError {
+	log.Printf("%s", message)
 	return &AppError{
 		Code:    code,
 		Message: message,
