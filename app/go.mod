@@ -8,7 +8,10 @@ require (
 	gorm.io/gorm v1.25.12
 )
 
+require github.com/aws/aws-lambda-go v1.41.0 // indirect
+
 require (
+	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
