@@ -3,6 +3,7 @@ package repository
 import (
 	"polaris-api/domain"
 	"polaris-api/infrastructure"
+	"polaris-api/infrastructure/repository/sql"
 	"polaris-api/interface/dto"
 	"polaris-api/utils"
 )
@@ -16,12 +17,6 @@ func (r *PlaceRepository) FindAll(
 ) (*dto.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
 
-	// SQLファイルを読み込み
-	sqlQuery, err := utils.LoadSQLFile("infrastructure/repository/sql/get_place_and_media_with_distance.sql")
-	if err != nil {
-		return nil, domain.Wrap(err, 500, "SQLファイルの読み込みに失敗")
-	}
-
 	// 検索結果を格納するスライスを初期化
 	places := []dto.PlaceMedia{}
 
@@ -29,8 +24,10 @@ func (r *PlaceRepository) FindAll(
 	cursorPIDValue := utils.EmptyStringToNull(cursorPID)
 	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
 
+	// SQLファイルを読み込み
+	sqlQuery := sql.GetPlaceAndMediaQuery()
 	// クエリで `LIMIT+1` のレコードを取得
-	err = db.Raw(sqlQuery, lon, lat, cursorDistance, cursorPIDValue, cursorMIDValue, limit+1).Scan(&places).Error
+	err := db.Raw(sqlQuery, lon, lat, cursorDistance, cursorPIDValue, cursorMIDValue, limit+1).Scan(&places).Error
 	if err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}
@@ -62,17 +59,13 @@ func (r *PlaceRepository) FindAll(
 
 func (r *PlaceRepository) FindByName(name string, lon, lat float64) ([]dto.SearchPlace, error) {
 	db := infrastructure.GetDatabaseConnection()
-	// SQLファイルを読み込み
-	sqlQuery, err := utils.LoadSQLFile("infrastructure/repository/sql/search_places_by_name.sql")
-	if err != nil {
-		// エラーを呼び出し元に返却
-		return nil, domain.Wrap(err, 500, "SQLファイルの読み込みに失敗")
-	}
 
 	// 検索結果を格納するスライスを初期化
 	places := []dto.SearchPlace{}
 
-	err = db.Raw(sqlQuery, lon, lat, name).Scan(&places).Error
+	// SQLファイルを読み込み
+	sqlQuery := sql.SearchPlacesByNameQuery()
+	err := db.Raw(sqlQuery, lon, lat, name).Scan(&places).Error
 	if err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}
