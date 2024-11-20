@@ -2,6 +2,7 @@ package repository
 
 import (
 	"polaris-api/domain"
+	"polaris-api/domain/models"
 	"polaris-api/infrastructure"
 	"polaris-api/infrastructure/repository/sql"
 	"polaris-api/interface/dto"
@@ -71,4 +72,17 @@ func (r *PlaceRepository) FindByName(name string, lon, lat float64) ([]dto.Searc
 	}
 
 	return places, nil
+}
+
+func (r *PlaceRepository) FindByID(id string) (*models.Place, error) {
+	db := infrastructure.GetDatabaseConnection()
+
+	var place models.Place
+	if err := db.Select(
+		"id, name, description, country, state, city, zip_code, address_line1, address_line2, latitude, longitude",
+	).First(&place, "id = ?", id).Error; err != nil {
+		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
+	}
+
+	return &place, nil
 }

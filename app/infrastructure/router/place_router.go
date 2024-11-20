@@ -38,6 +38,26 @@ func PlaceRouter(g *gin.RouterGroup) {
 		c.JSON(http.StatusOK, response)
 	})
 
+	g.GET("/places/:id", func(c *gin.Context) {
+		// パスパラメータからIDを取得
+		id := c.Param("id")
+
+		// ハンドラー呼び出し
+		place, err := placeHandler.GetPlacesByID(id)
+		if err != nil {
+			// エラー処理を共通関数に委譲
+			if appErr, ok := err.(*domain.AppError); ok {
+				handler.HandleError(c, appErr)
+			} else {
+				handler.HandleError(c, domain.New(500, "Unknown error occurred"))
+			}
+			return
+		}
+
+		// 正常レスポンス
+		c.JSON(http.StatusOK, place)
+	})
+
 	g.GET("/search", func(c *gin.Context) {
 		q := c.Query("q")
 		lonStr := c.Query("lon")

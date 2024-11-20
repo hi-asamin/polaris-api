@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"polaris-api/domain"
+	"polaris-api/domain/models"
 	"polaris-api/interface/dto"
 	"polaris-api/usecase"
 )
@@ -74,4 +75,20 @@ func (h *PlaceHandler) GetPlacesByName(q, lonStr, latStr string) ([]dto.SearchPl
 	}
 
 	return places, nil
+}
+
+func (h *PlaceHandler) GetPlacesByID(id string) (*models.Place, error) {
+	u := &usecase.PlaceUseCase{}
+
+	// IDの存在チェック
+	if id == "" {
+		return nil, domain.New(400, "IDが空です")
+	}
+
+	place, err := u.GetPlaceByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return place, nil
 }
