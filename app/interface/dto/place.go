@@ -3,7 +3,6 @@ package dto
 type PlacesResponse struct {
 	PlaceMedia []PlaceMedia `json:"places"`     // 場所とメディア情報
 	NextCursor *NextCursor  `json:"nextCursor"` // 次のカーソル情報
-	// HasNextPage bool         `json:"hasNextPage"` // 次のページ有無
 }
 
 // PlaceMedia は場所のメディア情報を表すレスポンスDTO

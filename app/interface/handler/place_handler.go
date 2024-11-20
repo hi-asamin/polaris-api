@@ -92,3 +92,38 @@ func (h *PlaceHandler) GetPlacesByID(id string) (*models.Place, error) {
 
 	return place, nil
 }
+
+func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string) (*dto.PlacesResponse, error) {
+	u := &usecase.PlaceUseCase{}
+
+	// IDの存在チェック
+	if id == "" {
+		return nil, domain.New(400, "IDが空です")
+	}
+
+	// クエリパラメータの検証と変換
+	lon, err := strconv.ParseFloat(lonStr, 64)
+	if err != nil {
+		return nil, domain.Wrap(err, 400, "緯度のパラメータエラー")
+	}
+
+	lat, err := strconv.ParseFloat(latStr, 64)
+	if err != nil {
+		return nil, domain.Wrap(err, 400, "経度のパラメータエラー")
+	}
+
+	limit := 20 // デフォルト値
+	if limitStr != "" {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			return nil, domain.Wrap(err, 400, "リミットのパラメータエラー")
+		}
+	}
+
+	places, err := u.GetPlacesNearBySpots(id, lon, lat, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return places, nil
+}

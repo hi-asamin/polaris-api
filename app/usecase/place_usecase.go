@@ -50,3 +50,14 @@ func (u *PlaceUseCase) GetPlaceByID(id string) (*models.Place, error) {
 
 	return place, nil
 }
+
+func (u *PlaceUseCase) GetPlacesNearBySpots(id string, lon, lat float64, limit int) (*dto.PlacesResponse, error) {
+	repo := &repository.PlaceRepository{}
+
+	places, err := repo.FindNearBySpots(id, lon, lat, limit)
+	if err != nil {
+		return nil, domain.Wrap(err, 500, "場所情報の取得に失敗")
+	}
+
+	return places, nil
+}

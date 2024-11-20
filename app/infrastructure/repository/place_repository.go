@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"polaris-api/constants"
 	"polaris-api/domain"
 	"polaris-api/domain/models"
 	"polaris-api/infrastructure"
@@ -85,4 +86,44 @@ func (r *PlaceRepository) FindByID(id string) (*models.Place, error) {
 	}
 
 	return &place, nil
+}
+
+func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, limit int) (*dto.PlacesResponse, error) {
+	// 検索結果を格納するスライスを初期化
+	places := []dto.PlaceMedia{}
+
+	nearPlaceDistance := constants.NearPlaceDistance
+
+	db := infrastructure.GetDatabaseConnection()
+
+	// SQLファイルを読み込み
+	sqlQuery := sql.FindNearBySpots()
+	err := db.Raw(sqlQuery, lat, lon, nearPlaceDistance, excludeID, limit+1).Scan(&places).Error
+	if err != nil {
+		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
+	}
+
+	// `hasNextPage` フラグと `nextCursor` を初期化
+	var nextCursor *dto.NextCursor = nil
+
+	// 検索結果が `limit+1` 件の場合、次のカーソルを設定
+	if len(places) > limit {
+		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
+		nextCursor = &dto.NextCursor{
+			Distance: lastPlace.Distance,
+			PID:      lastPlace.PID,
+			MID:      lastPlace.MID,
+		}
+
+		// リストの最後の要素を削除して `limit` 件にする
+		places = places[:limit]
+	}
+
+	// レスポンスDTOを構築
+	response := &dto.PlacesResponse{
+		PlaceMedia: places,
+		NextCursor: nextCursor,
+	}
+
+	return response, nil
 }
