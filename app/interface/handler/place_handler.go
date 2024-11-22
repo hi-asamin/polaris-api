@@ -2,6 +2,7 @@ package handler
 
 import (
 	"strconv"
+	"strings"
 
 	"polaris-api/domain"
 	"polaris-api/domain/models"
@@ -126,4 +127,33 @@ func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string)
 	}
 
 	return places, nil
+}
+
+func (h *PlaceHandler) GetPlacesBaseQuery(
+	keywords, cursorPID, cursorMID, limitStr string,
+) (*dto.PlacesResponse, error) {
+	// クエリパラメータの検証と変換
+	// キーワードをスペースで分割
+	words := strings.Fields(keywords)
+	if len(words) == 0 {
+		return nil, domain.New(400, "検索キーワードが空です")
+	}
+
+	var err error
+	limit := 20 // デフォルト値
+	if limitStr != "" {
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			return nil, domain.Wrap(err, 400, "リミットのパラメータエラー")
+		}
+	}
+
+	// Usecaseの呼び出し
+	u := &usecase.PlaceUseCase{}
+	response, err := u.GetPlacesBaseQuery(words, cursorPID, cursorMID, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }

@@ -20,7 +20,7 @@ func (u *PlaceUseCase) GetPlaces(
 	// リポジトリからデータ取得
 	response, err := repo.FindAll(lon, lat, cursorDistance, cursorPID, cursorMID, limit)
 	if err != nil {
-		return nil, domain.Wrap(err, 500, "場所情報の取得に失敗")
+		return nil, err
 	}
 
 	return response, nil
@@ -30,7 +30,7 @@ func (u *PlaceUseCase) GetPlacesByName(name string, lon, lat float64) ([]dto.Sea
 	repo := &repository.PlaceRepository{}
 	places, err := repo.FindByName(name, lon, lat)
 	if err != nil {
-		return nil, domain.Wrap(err, 500, "場所情報の取得に失敗")
+		return nil, err
 	}
 
 	return places, nil
@@ -40,7 +40,7 @@ func (u *PlaceUseCase) GetPlaceByID(id string) (*models.Place, error) {
 	repo := &repository.PlaceRepository{}
 	place, err := repo.FindByID(id)
 	if err != nil {
-		return nil, domain.Wrap(err, 500, "場所情報の取得に失敗")
+		return nil, err
 	}
 
 	// place が nil の場合にエラーを返す
@@ -56,8 +56,25 @@ func (u *PlaceUseCase) GetPlacesNearBySpots(id string, lon, lat float64, limit i
 
 	places, err := repo.FindNearBySpots(id, lon, lat, limit)
 	if err != nil {
-		return nil, domain.Wrap(err, 500, "場所情報の取得に失敗")
+		return nil, err
 	}
 
 	return places, nil
+}
+
+func (u *PlaceUseCase) GetPlacesBaseQuery(
+	keywords []string,
+	cursorPID, cursorMID string,
+	limit int,
+) (*dto.PlacesResponse, error) {
+	// リポジトリインスタンスの作成
+	repo := &repository.PlaceRepository{}
+
+	// リポジトリからデータ取得
+	response, err := repo.FindPlacesBaseQuery(keywords, cursorPID, cursorMID, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }

@@ -1,6 +1,10 @@
 package repository
 
 import (
+	"fmt"
+	"log"
+	"strings"
+
 	"polaris-api/constants"
 	"polaris-api/domain"
 	"polaris-api/domain/models"
@@ -113,6 +117,75 @@ func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, li
 			Distance: lastPlace.Distance,
 			PID:      lastPlace.PID,
 			MID:      lastPlace.MID,
+		}
+
+		// リストの最後の要素を削除して `limit` 件にする
+		places = places[:limit]
+	}
+
+	// レスポンスDTOを構築
+	response := &dto.PlacesResponse{
+		PlaceMedia: places,
+		NextCursor: nextCursor,
+	}
+
+	return response, nil
+}
+
+func (r *PlaceRepository) FindPlacesBaseQuery(
+	keywords []string,
+	cursorPID, cursorMID string,
+	limit int,
+) (*dto.PlacesResponse, error) {
+	db := infrastructure.GetDatabaseConnection()
+
+	// 検索結果を格納するスライスを初期化
+	places := []dto.PlaceMedia{}
+
+	// 空文字列を NULL に変換
+	cursorPIDValue := utils.EmptyStringToNull(cursorPID)
+	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
+
+	// 動的な ILIKE 条件を構築
+	ilikeConditions := []string{}
+	params := []interface{}{limit, cursorPIDValue, cursorMIDValue}
+	paramIndex := 4
+
+	for _, word := range keywords {
+		ilikeConditions = append(ilikeConditions, fmt.Sprintf(`(
+			"Place".name ILIKE $%d::TEXT OR
+			"Place".description ILIKE $%d::TEXT OR
+			"Place".city ILIKE $%d::TEXT
+		)`, paramIndex, paramIndex+1, paramIndex+2))
+		params = append(params, "%"+word+"%", "%"+word+"%", "%"+word+"%")
+		paramIndex += 3
+	}
+
+	// ILIKE条件を結合
+	whereClause := strings.Join(ilikeConditions, " AND ")
+	log.Printf("%s\n", whereClause)
+
+	// SQLクエリを動的に構築
+	query := fmt.Sprintf(sql.FindPlacesBaseQuery(), whereClause)
+	log.Printf("%s\n", query)
+
+	log.Printf("%s\n", params)
+
+	// クエリを実行して結果を取得
+	err := db.Raw(query, params...).Scan(&places).Error
+	if err != nil {
+		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
+	}
+
+	// 次のカーソル情報を初期化
+	var nextCursor *dto.NextCursor = nil
+
+	// 検索結果が `limit+1` 件の場合、次のカーソルを設定
+	if len(places) > limit {
+		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
+		nextCursor = &dto.NextCursor{
+			PID: lastPlace.PID,
+			MID: lastPlace.MID,
 		}
 
 		// リストの最後の要素を削除して `limit` 件にする
