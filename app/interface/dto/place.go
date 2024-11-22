@@ -9,7 +9,9 @@ type PlacesResponse struct {
 type PlaceMedia struct {
 	PID      string  `gorm:"column:pid" json:"pid"` // Place ID
 	MID      string  `gorm:"column:mid" json:"mid"` // Media ID
-	Name     string  `json:"name"`                  // メディアの名前
+	Name     string  `json:"name"`                  // 場所の名前
+	State    string  `json:"state"`                 // 都道府県
+	City     string  `json:"city"`                  // 市区町村
 	Src      string  `json:"src"`                   // メディアのソースURL
 	Type     string  `json:"type"`                  // メディアの種類
 	Alt      *string `json:"alt"`                   // 代替テキスト（省略可能）

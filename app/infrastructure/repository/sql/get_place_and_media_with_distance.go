@@ -6,6 +6,8 @@ func GetPlaceAndMediaQuery() string {
     SELECT 
       "Place".id AS pid,
       "Place".name,
+      "Place".state,
+      "Place".city,
       "Media".id AS mid, 
       "Media".media_url AS src,
       "Media".media_type AS type,
