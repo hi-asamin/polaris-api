@@ -26,9 +26,9 @@ func (u *PlaceUseCase) GetPlaces(
 	return response, nil
 }
 
-func (u *PlaceUseCase) GetPlacesByName(name string, lon, lat float64) ([]dto.SearchPlace, error) {
+func (u *PlaceUseCase) GetPlacesByName(keywords []string, lon, lat float64) ([]dto.SearchPlace, error) {
 	repo := &repository.PlaceRepository{}
-	places, err := repo.FindByName(name, lon, lat)
+	places, err := repo.SearchPlacesBaseQuery(keywords, lon, lat)
 	if err != nil {
 		return nil, err
 	}

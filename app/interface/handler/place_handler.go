@@ -57,6 +57,11 @@ func (h *PlaceHandler) GetPlacesByName(q, lonStr, latStr string) ([]dto.SearchPl
 	if q == "" {
 		return []dto.SearchPlace{}, nil
 	}
+	// キーワードをスペースで分割
+	keywords := strings.Fields(q)
+	if len(keywords) == 0 {
+		return []dto.SearchPlace{}, nil
+	}
 
 	// クエリパラメータの検証と変換
 	lon, err := strconv.ParseFloat(lonStr, 64)
@@ -70,7 +75,7 @@ func (h *PlaceHandler) GetPlacesByName(q, lonStr, latStr string) ([]dto.SearchPl
 	}
 
 	u := &usecase.PlaceUseCase{}
-	places, err := u.GetPlacesByName(q, lon, lat)
+	places, err := u.GetPlacesByName(keywords, lon, lat)
 	if err != nil {
 		return nil, err
 	}

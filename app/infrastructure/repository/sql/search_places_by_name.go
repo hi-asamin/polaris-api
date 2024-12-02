@@ -1,6 +1,6 @@
 package sql
 
-func SearchPlacesByNameQuery() string {
+func SearchPlacesBaseQuery() string {
 	return `
   SELECT
     id,
@@ -14,11 +14,15 @@ func SearchPlacesByNameQuery() string {
       ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
       geometry::geography
     ) / 1000) AS distance -- メートル単位からキロメートル単位に変換
-  FROM
+  FROM 
     "Place"
   WHERE
-    geometry IS NOT NULL
-    AND name ILIKE '%' || $3 || '%'
+  (
+    -- 検索キーワード条件
+    %s
+  )
+  AND
+  geometry IS NOT NULL
   ORDER BY distance
   LIMIT 10;
   `

@@ -63,15 +63,42 @@ func (r *PlaceRepository) FindAll(
 	return response, nil
 }
 
-func (r *PlaceRepository) FindByName(name string, lon, lat float64) ([]dto.SearchPlace, error) {
+func (r *PlaceRepository) SearchPlacesBaseQuery(
+	keywords []string,
+	lon, lat float64,
+) ([]dto.SearchPlace, error) {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 検索結果を格納するスライスを初期化
 	places := []dto.SearchPlace{}
 
-	// SQLファイルを読み込み
-	sqlQuery := sql.SearchPlacesByNameQuery()
-	err := db.Raw(sqlQuery, lon, lat, name).Scan(&places).Error
+	// 動的な ILIKE 条件を構築
+	ilikeConditions := []string{}
+	params := []interface{}{lon, lat}
+	paramIndex := 3
+
+	for _, word := range keywords {
+		ilikeConditions = append(ilikeConditions, fmt.Sprintf(`(
+			"Place".name ILIKE $%d::TEXT OR
+			"Place".description ILIKE $%d::TEXT OR
+			"Place".city ILIKE $%d::TEXT
+		)`, paramIndex, paramIndex+1, paramIndex+2))
+		params = append(params, "%"+word+"%", "%"+word+"%", "%"+word+"%")
+		paramIndex += 3
+	}
+
+	// ILIKE条件を結合
+	whereClause := strings.Join(ilikeConditions, " AND ")
+	log.Printf("%s\n", whereClause)
+
+	// SQLクエリを動的に構築
+	query := fmt.Sprintf(sql.SearchPlacesBaseQuery(), whereClause)
+	log.Printf("%s\n", query)
+
+	log.Printf("%s\n", params)
+
+	// クエリを実行して結果を取得
+	err := db.Raw(query, params...).Scan(&places).Error
 	if err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}
