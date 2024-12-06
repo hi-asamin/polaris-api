@@ -51,6 +51,17 @@ func (u *PlaceUseCase) GetPlaceByID(id string) (*models.Place, error) {
 	return place, nil
 }
 
+func (u *PlaceUseCase) CreatePlace(req *dto.CreatePlaceRequest) error {
+	repo := &repository.PlaceRepository{}
+
+	err := repo.CreatePlace(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (u *PlaceUseCase) GetPlacesNearBySpots(id string, lon, lat float64, limit int) (*dto.PlacesResponse, error) {
 	repo := &repository.PlaceRepository{}
 

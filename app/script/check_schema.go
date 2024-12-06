@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"polaris-api/domain/models"
+	"reflect"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -41,16 +42,27 @@ func main() {
 	}
 
 	for _, model := range modelsToCheck {
-		fmt.Printf("Checking schema for %T...\n", model)
-		if err := checkSchema(db, model); err != nil {
-			log.Printf("Schema mismatch for %T: %v\n", model, err)
-		} else {
-			fmt.Printf("Schema for %T is already up-to-date.\n", model)
+		modelType := reflect.TypeOf(model).Elem()
+		tableName := db.NamingStrategy.TableName(modelType.Name()) // テーブル名を取得
+
+		fmt.Printf("Checking schema for table: %s\n", tableName)
+
+		// テーブルが存在するか確認
+		if !db.Migrator().HasTable(model) {
+			log.Printf("Table %s does not exist.\n", tableName)
+			continue
+		}
+
+		// 各フィールドの確認
+		for i := 0; i < modelType.NumField(); i++ {
+			field := modelType.Field(i)
+			columnName := db.NamingStrategy.ColumnName("", field.Name)
+
+			if !db.Migrator().HasColumn(model, columnName) {
+				log.Printf("Column %s in table %s does not exist.\n", columnName, tableName)
+			} else {
+				fmt.Printf("Column %s in table %s is up-to-date.\n", columnName, tableName)
+			}
 		}
 	}
-}
-
-func checkSchema(db *gorm.DB, model interface{}) error {
-	tx := db.Session(&gorm.Session{DryRun: true})
-	return tx.AutoMigrate(model)
 }

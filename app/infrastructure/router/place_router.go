@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"polaris-api/domain"
+	"polaris-api/interface/dto"
 	"polaris-api/interface/handler"
 )
 
@@ -36,6 +37,37 @@ func PlaceRouter(g *gin.RouterGroup) {
 
 		// 正常レスポンス
 		c.JSON(http.StatusOK, response)
+	})
+
+	g.POST("/places", func(c *gin.Context) {
+		var req dto.CreatePlaceRequest
+
+		// リクエストボディのバインドとGinによる初期バリデーション
+		if err := c.ShouldBindJSON(&req); err != nil {
+			log.Print(err)
+			// エラー処理を共通関数に委譲
+			if appErr, ok := err.(*domain.AppError); ok {
+				handler.HandleError(c, appErr)
+			} else {
+				handler.HandleError(c, domain.New(500, "Unknown error occurred"))
+			}
+			return
+		}
+
+		// ハンドラー呼び出し
+		err := placeHandler.NewPlace(&req)
+		if err != nil {
+			// エラー処理を共通関数に委譲
+			if appErr, ok := err.(*domain.AppError); ok {
+				handler.HandleError(c, appErr)
+			} else {
+				handler.HandleError(c, domain.New(500, "Unknown error occurred"))
+			}
+			return
+		}
+
+		// 正常レスポンス
+		c.JSON(http.StatusCreated, nil)
 	})
 
 	g.GET("/places/:id", func(c *gin.Context) {

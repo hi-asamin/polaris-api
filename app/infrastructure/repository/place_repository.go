@@ -119,6 +119,40 @@ func (r *PlaceRepository) FindByID(id string) (*models.Place, error) {
 	return &place, nil
 }
 
+// createGeometryは緯度経度からWKT形式のgeometryデータを生成します
+func createGeometry(lat, lon *float64) string {
+	if lat != nil && lon != nil {
+		return fmt.Sprintf("POINT(%f %f)", *lon, *lat)
+	}
+	return ""
+}
+
+func (r *PlaceRepository) CreatePlace(req *dto.CreatePlaceRequest) error {
+	db := infrastructure.GetDatabaseConnection()
+
+	// Placeモデルに変換
+	newPlace := &models.Place{
+		Name:         req.Name,
+		Description:  req.Description,
+		Country:      req.Country,
+		State:        req.State,
+		City:         req.City,
+		ZipCode:      req.ZipCode,
+		AddressLine1: req.AddressLine1,
+		AddressLine2: req.AddressLine2,
+		Latitude:     req.Latitude,
+		Longitude:    req.Longitude,
+		Geometry:     createGeometry(req.Latitude, req.Longitude),
+	}
+
+	// データベースに登録
+	if err := db.Create(newPlace).Error; err != nil {
+		return domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
+	}
+
+	return nil
+}
+
 func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, limit int) (*dto.PlacesResponse, error) {
 	// 検索結果を格納するスライスを初期化
 	places := []dto.PlaceMedia{}

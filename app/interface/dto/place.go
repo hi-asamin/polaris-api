@@ -35,3 +35,16 @@ type SearchPlace struct {
 	Address2 string  `json:"address2"` // 住所2
 	Distance float64 `json:"distance"` // 距離（キロメートル単位）
 }
+
+type CreatePlaceRequest struct {
+	Name         string   `json:"name" binding:"required"`
+	Description  *string  `json:"description"`
+	Country      string   `json:"country" binding:"required"`
+	State        string   `json:"state" binding:"required"`
+	City         string   `json:"city" binding:"required"`
+	ZipCode      *string  `json:"zipCode"`
+	AddressLine1 string   `json:"addressLine1" binding:"required"`
+	AddressLine2 *string  `json:"addressLine2"`
+	Latitude     *float64 `json:"latitude"`
+	Longitude    *float64 `json:"longitude"`
+}

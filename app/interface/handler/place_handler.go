@@ -52,6 +52,18 @@ func (h *PlaceHandler) GetPlaces(
 	return response, nil
 }
 
+func (h *PlaceHandler) NewPlace(req *dto.CreatePlaceRequest) error {
+	// Usecaseの呼び出し
+	u := &usecase.PlaceUseCase{}
+
+	err := u.CreatePlace(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (h *PlaceHandler) GetPlacesByName(q, lonStr, latStr string) ([]dto.SearchPlace, error) {
 	// 検索ワードが空の場合は空配列を返却する
 	if q == "" {

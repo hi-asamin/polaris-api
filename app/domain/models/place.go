@@ -12,7 +12,7 @@ type Place struct {
 	AddressLine2 *string  `gorm:"size:500" json:"addressline2"`
 	Latitude     *float64 `json:"latitude"`
 	Longitude    *float64 `json:"longitude"`
-	Geometry     float64  `gorm:"type:geometry(Point, 4326)" json:"geometry"`
+	Geometry     string   `gorm:"type:geometry(Point, 4326)" json:"geometry"`
 
 	Posts           []Post  `json:"posts"`
 	Media           []Media `json:"media"`
