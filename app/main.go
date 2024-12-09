@@ -21,6 +21,7 @@ func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 
 func main() {
 	infrastructure.NewDatabase()
+	infrastructure.NewS3Client()
 
 	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
 		// Lambda環境
