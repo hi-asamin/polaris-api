@@ -38,6 +38,7 @@ func CreateRouter() *gin.Engine {
 
 	// Router
 	PlaceRouter(g)
+	PostsRouter(g)
 	SearchRouter(g)
 	CategoryRouter(g)
 
