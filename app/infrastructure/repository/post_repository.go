@@ -3,7 +3,6 @@ package repository
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"polaris-api/domain"
@@ -14,7 +13,7 @@ import (
 type PostRepository struct{}
 
 // UploadImageはS3にファイルをアップロードします
-func (r *PostRepository) CreatePost(userID, placeID, body string, published bool, fileNames []string) error {
+func (r *PostRepository) CreatePost(userID, placeID, placeName, body string, published bool, fileNames []string) error {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 現在時刻を取得
@@ -28,7 +27,6 @@ func (r *PostRepository) CreatePost(userID, placeID, body string, published bool
 
 	// Postモデルを作成
 	post := &models.Post{
-		ID:          uuid.New().String(), // UUIDを生成して設定
 		UserID:      userID,
 		PlaceID:     placeID,
 		Body:        &body,
@@ -46,6 +44,7 @@ func (r *PostRepository) CreatePost(userID, placeID, body string, published bool
 			PlaceID:    placeID,
 			MediaType:  "image",
 			MediaURL:   fileName,
+			AltText:    &placeName,
 			UploadedAt: time.Now(),
 		})
 	}
