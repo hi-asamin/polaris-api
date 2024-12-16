@@ -17,7 +17,6 @@ import (
 type PlaceRepository struct{}
 
 func (r *PlaceRepository) FindAll(
-	lon, lat, cursorDistance float64,
 	cursorPID, cursorMID string,
 	limit int,
 ) (*dto.PlacesResponse, error) {
@@ -31,9 +30,9 @@ func (r *PlaceRepository) FindAll(
 	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
 
 	// SQLファイルを読み込み
-	sqlQuery := sql.GetPlaceAndMediaQuery()
+	sqlQuery := sql.FindAllPlaces()
 	// クエリで `LIMIT+1` のレコードを取得
-	err := db.Raw(sqlQuery, lon, lat, cursorDistance, cursorPIDValue, cursorMIDValue, limit+1).Scan(&places).Error
+	err := db.Raw(sqlQuery, cursorPIDValue, cursorMIDValue, limit+1).Scan(&places).Error
 	if err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}
@@ -45,9 +44,8 @@ func (r *PlaceRepository) FindAll(
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
 		nextCursor = &dto.NextCursor{
-			Distance: lastPlace.Distance,
-			PID:      lastPlace.PID,
-			MID:      lastPlace.MID,
+			PID: lastPlace.PID,
+			MID: lastPlace.MID,
 		}
 
 		// リストの最後の要素を削除して `limit` 件にする
@@ -163,7 +161,7 @@ func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, li
 
 	// SQLファイルを読み込み
 	sqlQuery := sql.FindNearBySpots()
-	err := db.Raw(sqlQuery, lat, lon, nearPlaceDistance, excludeID, limit+1).Scan(&places).Error
+	err := db.Raw(sqlQuery, lon, lat, nearPlaceDistance, excludeID, limit+1).Scan(&places).Error
 	if err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}
@@ -228,9 +226,6 @@ func (r *PlaceRepository) FindPlacesBaseQuery(
 
 	// SQLクエリを動的に構築
 	query := fmt.Sprintf(sql.FindPlacesBaseQuery(), whereClause)
-	log.Printf("%s\n", query)
-
-	log.Printf("%s\n", params)
 
 	// クエリを実行して結果を取得
 	err := db.Raw(query, params...).Scan(&places).Error

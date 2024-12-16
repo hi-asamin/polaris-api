@@ -13,27 +13,10 @@ import (
 type PlaceHandler struct{}
 
 func (h *PlaceHandler) GetPlaces(
-	lonStr, latStr, cursorDistanceStr, cursorPID, cursorMID, limitStr string,
+	cursorPID, cursorMID, limitStr string,
 ) (*dto.PlacesResponse, error) {
+	var err error
 	// クエリパラメータの検証と変換
-	lon, err := strconv.ParseFloat(lonStr, 64)
-	if err != nil {
-		return nil, domain.Wrap(err, 400, "緯度のパラメータエラー")
-	}
-
-	lat, err := strconv.ParseFloat(latStr, 64)
-	if err != nil {
-		return nil, domain.Wrap(err, 400, "経度のパラメータエラー")
-	}
-
-	cursorDistance := 0.0
-	if cursorDistanceStr != "" {
-		cursorDistance, err = strconv.ParseFloat(cursorDistanceStr, 64)
-		if err != nil {
-			return nil, domain.Wrap(err, 400, "カーソル距離のパラメータエラー")
-		}
-	}
-
 	limit := 20 // デフォルト値
 	if limitStr != "" {
 		limit, err = strconv.Atoi(limitStr)
@@ -44,7 +27,7 @@ func (h *PlaceHandler) GetPlaces(
 
 	// Usecaseの呼び出し
 	u := &usecase.PlaceUseCase{}
-	response, err := u.GetPlaces(lon, lat, cursorDistance, cursorPID, cursorMID, limit)
+	response, err := u.GetPlaces(cursorPID, cursorMID, limit)
 	if err != nil {
 		return nil, err
 	}

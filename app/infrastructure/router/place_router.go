@@ -16,15 +16,12 @@ func PlaceRouter(g *gin.RouterGroup) {
 	placeHandler := &handler.PlaceHandler{}
 
 	g.GET("/places", func(c *gin.Context) {
-		lonStr := c.Query("lon")
-		latStr := c.Query("lat")
-		cursorDistanceStr := c.Query("cursorDistance") // カーソル距離
-		cursorPID := c.Query("cursorPID")              // カーソルのPlace ID
-		cursorMID := c.Query("cursorMID")              // カーソルのMedia ID
-		limitStr := c.Query("limit")                   // リミット件数
+		cursorPID := c.Query("cursorPID") // カーソルのPlace ID
+		cursorMID := c.Query("cursorMID") // カーソルのMedia ID
+		limitStr := c.Query("limit")      // リミット件数
 
 		// ハンドラー呼び出し
-		response, err := placeHandler.GetPlaces(lonStr, latStr, cursorDistanceStr, cursorPID, cursorMID, limitStr)
+		response, err := placeHandler.GetPlaces(cursorPID, cursorMID, limitStr)
 		if err != nil {
 			// エラー処理を共通関数に委譲
 			if appErr, ok := err.(*domain.AppError); ok {

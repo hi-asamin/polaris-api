@@ -10,15 +10,14 @@ import (
 type PlaceUseCase struct{}
 
 func (u *PlaceUseCase) GetPlaces(
-	lon, lat float64,
-	cursorDistance float64, cursorPID, cursorMID string,
+	cursorPID, cursorMID string,
 	limit int,
 ) (*dto.PlacesResponse, error) {
 	// リポジトリインスタンスの作成
 	repo := &repository.PlaceRepository{}
 
 	// リポジトリからデータ取得
-	response, err := repo.FindAll(lon, lat, cursorDistance, cursorPID, cursorMID, limit)
+	response, err := repo.FindAll(cursorPID, cursorMID, limit)
 	if err != nil {
 		return nil, err
 	}
