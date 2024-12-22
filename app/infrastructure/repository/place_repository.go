@@ -5,6 +5,8 @@ import (
 	"log"
 	"strings"
 
+	"gorm.io/gorm"
+
 	"polaris-api/constants"
 	"polaris-api/domain"
 	"polaris-api/domain/models"
@@ -143,12 +145,27 @@ func (r *PlaceRepository) CreatePlace(req *dto.CreatePlaceRequest) error {
 		Geometry:     createGeometry(req.Latitude, req.Longitude),
 	}
 
-	// データベースに登録
-	if err := db.Create(newPlace).Error; err != nil {
-		return domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
-	}
+	return db.Transaction(func(tx *gorm.DB) error {
+		// Placeを保存
+		if err := tx.Create(newPlace).Error; err != nil {
+			return domain.Wrap(err, 500, "場所の保存に失敗")
+		}
 
-	return nil
+		// CategoryIdsが1つ以上存在する場合のみPlaceCategoryを保存
+		if len(req.CategoryIds) > 0 {
+			for _, categoryID := range req.CategoryIds {
+				placeCategory := &models.PlaceCategory{
+					PlaceID:    newPlace.ID,
+					CategoryID: categoryID,
+				}
+				if err := tx.Create(placeCategory).Error; err != nil {
+					return domain.Wrap(err, 500, "カテゴリ情報の保存に失敗")
+				}
+			}
+		}
+
+		return nil
+	})
 }
 
 func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, limit int) (*dto.PlacesResponse, error) {
