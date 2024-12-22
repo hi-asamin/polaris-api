@@ -12,12 +12,13 @@ type PlaceUseCase struct{}
 func (u *PlaceUseCase) GetPlaces(
 	cursorPID, cursorMID string,
 	limit int,
+	categoryIds []int,
 ) (*dto.PlacesResponse, error) {
 	// リポジトリインスタンスの作成
 	repo := &repository.PlaceRepository{}
 
 	// リポジトリからデータ取得
-	response, err := repo.FindAll(cursorPID, cursorMID, limit)
+	response, err := repo.FindAll(cursorPID, cursorMID, limit, categoryIds)
 	if err != nil {
 		return nil, err
 	}

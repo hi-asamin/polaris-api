@@ -2,6 +2,17 @@ package sql
 
 func FindAllPlaces() string {
 	return `
+  WITH filtered_places AS (
+    SELECT DISTINCT "Place".id
+    FROM "Place"
+    LEFT JOIN "PlaceCategory" ON "Place".id = "PlaceCategory".place_id
+    WHERE
+      CASE 
+        WHEN ARRAY_LENGTH($4::INTEGER[], 1) > 0 THEN
+          "PlaceCategory".category_id = ANY($4::INTEGER[])
+        ELSE TRUE
+      END
+  )
   SELECT 
     "Place".id AS pid,
     "Place".name,
@@ -17,6 +28,9 @@ func FindAllPlaces() string {
     "Media" 
     ON
       "Place".id = "Media".place_id
+  INNER JOIN
+    filtered_places
+    ON "Place".id = filtered_places.id
   WHERE 
     (
       -- 初回リクエスト時またはカーソル条件に該当するデータをフィルタリング

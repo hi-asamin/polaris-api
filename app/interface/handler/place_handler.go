@@ -14,6 +14,7 @@ type PlaceHandler struct{}
 
 func (h *PlaceHandler) GetPlaces(
 	cursorPID, cursorMID, limitStr string,
+	categoryIds []int,
 ) (*dto.PlacesResponse, error) {
 	var err error
 	// クエリパラメータの検証と変換
@@ -27,7 +28,7 @@ func (h *PlaceHandler) GetPlaces(
 
 	// Usecaseの呼び出し
 	u := &usecase.PlaceUseCase{}
-	response, err := u.GetPlaces(cursorPID, cursorMID, limit)
+	response, err := u.GetPlaces(cursorPID, cursorMID, limit, categoryIds)
 	if err != nil {
 		return nil, err
 	}

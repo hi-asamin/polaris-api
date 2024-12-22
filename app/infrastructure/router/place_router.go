@@ -3,6 +3,8 @@ package router
 import (
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -20,8 +22,23 @@ func PlaceRouter(g *gin.RouterGroup) {
 		cursorMID := c.Query("cursorMID") // カーソルのMedia ID
 		limitStr := c.Query("limit")      // リミット件数
 
+		var categoryIds []int
+		categoryIdsStr := c.Query("categoryIds")
+		if categoryIdsStr != "" {
+			// カンマ区切りの文字列を分割
+			categoryIdsStrArr := strings.Split(categoryIdsStr, ",")
+			categoryIds = make([]int, 0, len(categoryIdsStrArr))
+
+			// 各文字列を数値に変換
+			for _, idStr := range categoryIdsStrArr {
+				if id, err := strconv.Atoi(idStr); err == nil {
+					categoryIds = append(categoryIds, id)
+				}
+			}
+		}
+
 		// ハンドラー呼び出し
-		response, err := placeHandler.GetPlaces(cursorPID, cursorMID, limitStr)
+		response, err := placeHandler.GetPlaces(cursorPID, cursorMID, limitStr, categoryIds)
 		if err != nil {
 			// エラー処理を共通関数に委譲
 			if appErr, ok := err.(*domain.AppError); ok {
