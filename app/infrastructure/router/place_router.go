@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"polaris-api/domain"
-	"polaris-api/interface/dto"
 	"polaris-api/interface/handler"
+	"polaris-api/interface/model"
 )
 
 func PlaceRouter(g *gin.RouterGroup) {
@@ -54,7 +54,7 @@ func PlaceRouter(g *gin.RouterGroup) {
 	})
 
 	g.POST("/places", func(c *gin.Context) {
-		var req dto.CreatePlaceRequest
+		var req model.CreatePlaceRequest
 
 		// リクエストボディのバインドとGinによる初期バリデーション
 		if err := c.ShouldBindJSON(&req); err != nil {

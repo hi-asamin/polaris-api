@@ -4,7 +4,7 @@ import (
 	"polaris-api/domain"
 	"polaris-api/domain/models"
 	"polaris-api/infrastructure/repository"
-	"polaris-api/interface/dto"
+	"polaris-api/interface/model"
 )
 
 type PlaceUseCase struct{}
@@ -13,7 +13,7 @@ func (u *PlaceUseCase) GetPlaces(
 	cursorPID, cursorMID string,
 	limit int,
 	categoryIds []int,
-) (*dto.PlacesResponse, error) {
+) (*model.PlacesResponse, error) {
 	// リポジトリインスタンスの作成
 	repo := &repository.PlaceRepository{}
 
@@ -26,7 +26,7 @@ func (u *PlaceUseCase) GetPlaces(
 	return response, nil
 }
 
-func (u *PlaceUseCase) GetPlacesByName(keywords []string, lon, lat float64) ([]dto.SearchPlace, error) {
+func (u *PlaceUseCase) GetPlacesByName(keywords []string, lon, lat float64) ([]model.SearchPlace, error) {
 	repo := &repository.PlaceRepository{}
 	places, err := repo.SearchPlacesBaseQuery(keywords, lon, lat)
 	if err != nil {
@@ -51,7 +51,7 @@ func (u *PlaceUseCase) GetPlaceByID(id string) (*models.Place, error) {
 	return place, nil
 }
 
-func (u *PlaceUseCase) CreatePlace(req *dto.CreatePlaceRequest) error {
+func (u *PlaceUseCase) CreatePlace(req *model.CreatePlaceRequest) error {
 	repo := &repository.PlaceRepository{}
 
 	err := repo.CreatePlace(req)
@@ -62,7 +62,7 @@ func (u *PlaceUseCase) CreatePlace(req *dto.CreatePlaceRequest) error {
 	return nil
 }
 
-func (u *PlaceUseCase) GetPlacesNearBySpots(id string, lon, lat float64, limit int) (*dto.PlacesResponse, error) {
+func (u *PlaceUseCase) GetPlacesNearBySpots(id string, lon, lat float64, limit int) (*model.PlacesResponse, error) {
 	repo := &repository.PlaceRepository{}
 
 	places, err := repo.FindNearBySpots(id, lon, lat, limit)
@@ -77,7 +77,7 @@ func (u *PlaceUseCase) GetPlacesBaseQuery(
 	keywords []string,
 	cursorPID, cursorMID string,
 	limit int,
-) (*dto.PlacesResponse, error) {
+) (*model.PlacesResponse, error) {
 	// リポジトリインスタンスの作成
 	repo := &repository.PlaceRepository{}
 

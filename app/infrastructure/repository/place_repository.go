@@ -12,7 +12,7 @@ import (
 	"polaris-api/domain/models"
 	"polaris-api/infrastructure"
 	"polaris-api/infrastructure/repository/sql"
-	"polaris-api/interface/dto"
+	"polaris-api/interface/model"
 	"polaris-api/utils"
 )
 
@@ -22,11 +22,11 @@ func (r *PlaceRepository) FindAll(
 	cursorPID, cursorMID string,
 	limit int,
 	categoryIds []int,
-) (*dto.PlacesResponse, error) {
+) (*model.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 検索結果を格納するスライスを初期化
-	places := []dto.PlaceMedia{}
+	places := []model.PlaceMedia{}
 
 	// 空文字列を NULL に変換
 	cursorPIDValue := utils.EmptyStringToNull(cursorPID)
@@ -41,12 +41,12 @@ func (r *PlaceRepository) FindAll(
 	}
 
 	// `hasNextPage` フラグと `nextCursor` を初期化
-	var nextCursor *dto.NextCursor = nil
+	var nextCursor *model.NextCursor = nil
 
 	// 検索結果が `limit+1` 件の場合、次のカーソルを設定
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
-		nextCursor = &dto.NextCursor{
+		nextCursor = &model.NextCursor{
 			PID: lastPlace.PID,
 			MID: lastPlace.MID,
 		}
@@ -56,7 +56,7 @@ func (r *PlaceRepository) FindAll(
 	}
 
 	// レスポンスDTOを構築
-	response := &dto.PlacesResponse{
+	response := &model.PlacesResponse{
 		PlaceMedia: places,
 		NextCursor: nextCursor,
 	}
@@ -67,11 +67,11 @@ func (r *PlaceRepository) FindAll(
 func (r *PlaceRepository) SearchPlacesBaseQuery(
 	keywords []string,
 	lon, lat float64,
-) ([]dto.SearchPlace, error) {
+) ([]model.SearchPlace, error) {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 検索結果を格納するスライスを初期化
-	places := []dto.SearchPlace{}
+	places := []model.SearchPlace{}
 
 	// 動的な ILIKE 条件を構築
 	ilikeConditions := []string{}
@@ -128,7 +128,7 @@ func createGeometry(lat, lon *float64) string {
 	return ""
 }
 
-func (r *PlaceRepository) CreatePlace(req *dto.CreatePlaceRequest) error {
+func (r *PlaceRepository) CreatePlace(req *model.CreatePlaceRequest) error {
 	db := infrastructure.GetDatabaseConnection()
 
 	// Placeモデルに変換
@@ -169,9 +169,9 @@ func (r *PlaceRepository) CreatePlace(req *dto.CreatePlaceRequest) error {
 	})
 }
 
-func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, limit int) (*dto.PlacesResponse, error) {
+func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, limit int) (*model.PlacesResponse, error) {
 	// 検索結果を格納するスライスを初期化
-	places := []dto.PlaceMedia{}
+	places := []model.PlaceMedia{}
 
 	nearPlaceDistance := constants.NearPlaceDistance
 
@@ -185,12 +185,12 @@ func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, li
 	}
 
 	// `hasNextPage` フラグと `nextCursor` を初期化
-	var nextCursor *dto.NextCursor = nil
+	var nextCursor *model.NextCursor = nil
 
 	// 検索結果が `limit+1` 件の場合、次のカーソルを設定
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
-		nextCursor = &dto.NextCursor{
+		nextCursor = &model.NextCursor{
 			Distance: lastPlace.Distance,
 			PID:      lastPlace.PID,
 			MID:      lastPlace.MID,
@@ -201,7 +201,7 @@ func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, li
 	}
 
 	// レスポンスDTOを構築
-	response := &dto.PlacesResponse{
+	response := &model.PlacesResponse{
 		PlaceMedia: places,
 		NextCursor: nextCursor,
 	}
@@ -213,11 +213,11 @@ func (r *PlaceRepository) FindPlacesBaseQuery(
 	keywords []string,
 	cursorPID, cursorMID string,
 	limit int,
-) (*dto.PlacesResponse, error) {
+) (*model.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 検索結果を格納するスライスを初期化
-	places := []dto.PlaceMedia{}
+	places := []model.PlaceMedia{}
 
 	// 空文字列を NULL に変換
 	cursorPIDValue := utils.EmptyStringToNull(cursorPID)
@@ -252,12 +252,12 @@ func (r *PlaceRepository) FindPlacesBaseQuery(
 	}
 
 	// 次のカーソル情報を初期化
-	var nextCursor *dto.NextCursor = nil
+	var nextCursor *model.NextCursor = nil
 
 	// 検索結果が `limit+1` 件の場合、次のカーソルを設定
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
-		nextCursor = &dto.NextCursor{
+		nextCursor = &model.NextCursor{
 			PID: lastPlace.PID,
 			MID: lastPlace.MID,
 		}
@@ -267,7 +267,7 @@ func (r *PlaceRepository) FindPlacesBaseQuery(
 	}
 
 	// レスポンスDTOを構築
-	response := &dto.PlacesResponse{
+	response := &model.PlacesResponse{
 		PlaceMedia: places,
 		NextCursor: nextCursor,
 	}

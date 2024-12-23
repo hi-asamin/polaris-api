@@ -8,12 +8,13 @@ import (
 	"polaris-api/domain"
 	"polaris-api/domain/models"
 	"polaris-api/infrastructure"
+	"polaris-api/interface/model"
 )
 
 type PostRepository struct{}
 
 // UploadImageはS3にファイルをアップロードします
-func (r *PostRepository) CreatePost(userID, placeID, placeName, body string, published bool, fileNames []string) error {
+func (r *PostRepository) CreatePost(userID, placeID, placeName, body string, published bool, fileInfos []model.FileInfo) error {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 現在時刻を取得
@@ -38,12 +39,12 @@ func (r *PostRepository) CreatePost(userID, placeID, placeName, body string, pub
 
 	// Mediaモデルを作成
 	var media []models.Media
-	for _, fileName := range fileNames {
+	for _, fileInfo := range fileInfos {
 		media = append(media, models.Media{
 			PostID:     post.ID,
 			PlaceID:    placeID,
-			MediaType:  "image",
-			MediaURL:   fileName,
+			MediaType:  fileInfo.FileType,
+			MediaURL:   fileInfo.FileName,
 			AltText:    &placeName,
 			UploadedAt: time.Now(),
 		})

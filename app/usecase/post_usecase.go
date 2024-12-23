@@ -3,6 +3,7 @@ package usecase
 import (
 	"mime/multipart"
 	"polaris-api/infrastructure/repository"
+	"polaris-api/interface/model"
 )
 
 type PostUseCase struct{}
@@ -18,19 +19,30 @@ func (u *PostUseCase) NewPost(userID, placeID, body string, files []*multipart.F
 		return err
 	}
 
+	var fileInfos []model.FileInfo
 	// S3にファイルをアップロード
-	var fileNames []string
 	for _, file := range files {
 		fileNameWithoutExt, err := s3Repo.UploadImage(file, placeID, userID)
 		if err != nil {
 			return err
 		}
-		fileNames = append(fileNames, fileNameWithoutExt)
+
+		// ファイルタイプを判定
+		contentType := file.Header.Get("Content-Type")
+		fileType := "image"
+		if contentType == "video/mp4" || contentType == "video/quicktime" {
+			fileType = "video"
+		}
+
+		fileInfos = append(fileInfos, model.FileInfo{
+			FileName: fileNameWithoutExt,
+			FileType: fileType,
+		})
 	}
 
 	// TODO: デフォルトで公開設定（今後、下書き保存機能を実装したい）
 	// 投稿の本文とメディア情報をデータベースに格納
-	err = postRepo.CreatePost(userID, placeID, place.Name, body, true, fileNames)
+	err = postRepo.CreatePost(userID, placeID, place.Name, body, true, fileInfos)
 	if err != nil {
 		return err
 	}

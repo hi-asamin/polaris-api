@@ -6,7 +6,7 @@ import (
 
 	"polaris-api/domain"
 	"polaris-api/domain/models"
-	"polaris-api/interface/dto"
+	"polaris-api/interface/model"
 	"polaris-api/usecase"
 )
 
@@ -15,7 +15,7 @@ type PlaceHandler struct{}
 func (h *PlaceHandler) GetPlaces(
 	cursorPID, cursorMID, limitStr string,
 	categoryIds []int,
-) (*dto.PlacesResponse, error) {
+) (*model.PlacesResponse, error) {
 	var err error
 	// クエリパラメータの検証と変換
 	limit := 20 // デフォルト値
@@ -36,7 +36,7 @@ func (h *PlaceHandler) GetPlaces(
 	return response, nil
 }
 
-func (h *PlaceHandler) NewPlace(req *dto.CreatePlaceRequest) error {
+func (h *PlaceHandler) NewPlace(req *model.CreatePlaceRequest) error {
 	// Usecaseの呼び出し
 	u := &usecase.PlaceUseCase{}
 
@@ -48,15 +48,15 @@ func (h *PlaceHandler) NewPlace(req *dto.CreatePlaceRequest) error {
 	return nil
 }
 
-func (h *PlaceHandler) GetPlacesByName(q, lonStr, latStr string) ([]dto.SearchPlace, error) {
+func (h *PlaceHandler) GetPlacesByName(q, lonStr, latStr string) ([]model.SearchPlace, error) {
 	// 検索ワードが空の場合は空配列を返却する
 	if q == "" {
-		return []dto.SearchPlace{}, nil
+		return []model.SearchPlace{}, nil
 	}
 	// キーワードをスペースで分割
 	keywords := strings.Fields(q)
 	if len(keywords) == 0 {
-		return []dto.SearchPlace{}, nil
+		return []model.SearchPlace{}, nil
 	}
 
 	// クエリパラメータの検証と変換
@@ -95,7 +95,7 @@ func (h *PlaceHandler) GetPlacesByID(id string) (*models.Place, error) {
 	return place, nil
 }
 
-func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string) (*dto.PlacesResponse, error) {
+func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string) (*model.PlacesResponse, error) {
 	u := &usecase.PlaceUseCase{}
 
 	// IDの存在チェック
@@ -132,7 +132,7 @@ func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string)
 
 func (h *PlaceHandler) GetPlacesBaseQuery(
 	keywords, cursorPID, cursorMID, limitStr string,
-) (*dto.PlacesResponse, error) {
+) (*model.PlacesResponse, error) {
 	// クエリパラメータの検証と変換
 	// キーワードをスペースで分割
 	words := strings.Fields(keywords)
