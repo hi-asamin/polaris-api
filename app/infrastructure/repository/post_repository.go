@@ -68,3 +68,22 @@ func (r *PostRepository) CreatePost(userID, placeID, placeName, body string, pub
 		return nil
 	})
 }
+
+func (r *PostRepository) DeletePost(postID string) error {
+	db := infrastructure.GetDatabaseConnection()
+
+	// トランザクション開始
+	return db.Transaction(func(tx *gorm.DB) error {
+		// 関連するメディアを先に削除
+		if err := tx.Where("post_id = ?", postID).Delete(&models.Media{}).Error; err != nil {
+			return domain.Wrap(err, 500, "メディア情報の削除に失敗")
+		}
+
+		// 投稿を削除
+		if err := tx.Where("id = ?", postID).Delete(&models.Post{}).Error; err != nil {
+			return domain.Wrap(err, 500, "投稿の削除に失敗")
+		}
+
+		return nil
+	})
+}

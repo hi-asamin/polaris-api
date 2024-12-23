@@ -49,3 +49,15 @@ func (u *PostUseCase) NewPost(userID, placeID, body string, files []*multipart.F
 
 	return nil
 }
+
+func (u *PostUseCase) DeletePost(postID string) error {
+	postRepo := &repository.PostRepository{}
+
+	// 投稿を削除
+	err := postRepo.DeletePost(postID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

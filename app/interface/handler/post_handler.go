@@ -37,3 +37,18 @@ func (h *PostHandler) NewPost(userID, placeID, body string, files []*multipart.F
 
 	return nil
 }
+
+func (h *PostHandler) DeletePost(postID string) error {
+	u := &usecase.PostUseCase{}
+
+	if postID == "" {
+		return domain.New(400, "投稿IDの指定が不正")
+	}
+
+	err := u.DeletePost(postID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

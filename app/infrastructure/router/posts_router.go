@@ -45,4 +45,23 @@ func PostsRouter(g *gin.RouterGroup) {
 		c.JSON(http.StatusCreated, nil)
 	})
 
+	g.DELETE("/posts/:postId", func(c *gin.Context) {
+		// パスパラメータから投稿IDを取得
+		postID := c.Param("postId")
+
+		// ハンドラー呼び出し
+		err := postHandler.DeletePost(postID)
+		if err != nil {
+			// エラー処理を共通関数に委譲
+			if appErr, ok := err.(*domain.AppError); ok {
+				handler.HandleError(c, appErr)
+			} else {
+				handler.HandleError(c, domain.New(500, "Unknown error occurred"))
+			}
+			return
+		}
+
+		// 正常レスポンス
+		c.JSON(http.StatusOK, nil)
+	})
 }
