@@ -25,8 +25,7 @@ func FindPlacesBaseQuery() string {
   AND
   (
     -- カーソル条件
-    ($2::UUID IS NULL OR "Place".id > $2::UUID) OR 
-    ("Place".id = $2::UUID AND ($3::UUID IS NULL OR "Media".id > $3::UUID))
+    ($2::UUID IS NULL OR "Media".id > $2::UUID) 
   )
   ORDER BY
     "Place".id ASC,

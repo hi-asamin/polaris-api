@@ -13,7 +13,7 @@ import (
 type PlaceHandler struct{}
 
 func (h *PlaceHandler) GetPlaces(
-	cursorPID, cursorMID, limitStr string,
+	cursorMID, limitStr string,
 	categoryIds []int,
 ) (*model.PlacesResponse, error) {
 	var err error
@@ -28,7 +28,7 @@ func (h *PlaceHandler) GetPlaces(
 
 	// Usecaseの呼び出し
 	u := &usecase.PlaceUseCase{}
-	response, err := u.GetPlaces(cursorPID, cursorMID, limit, categoryIds)
+	response, err := u.GetPlaces(cursorMID, limit, categoryIds)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string)
 }
 
 func (h *PlaceHandler) GetPlacesBaseQuery(
-	keywords, cursorPID, cursorMID, limitStr string,
+	keywords, cursorMID, limitStr string,
 ) (*model.PlacesResponse, error) {
 	// クエリパラメータの検証と変換
 	// キーワードをスペースで分割
@@ -151,7 +151,7 @@ func (h *PlaceHandler) GetPlacesBaseQuery(
 
 	// Usecaseの呼び出し
 	u := &usecase.PlaceUseCase{}
-	response, err := u.GetPlacesBaseQuery(words, cursorPID, cursorMID, limit)
+	response, err := u.GetPlacesBaseQuery(words, cursorMID, limit)
 	if err != nil {
 		return nil, err
 	}

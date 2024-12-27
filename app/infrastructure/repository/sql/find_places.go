@@ -8,8 +8,8 @@ func FindAllPlaces() string {
     LEFT JOIN "PlaceCategory" ON "Place".id = "PlaceCategory".place_id
     WHERE
       CASE 
-        WHEN ARRAY_LENGTH($4::INTEGER[], 1) > 0 THEN
-          "PlaceCategory".category_id = ANY($4::INTEGER[])
+        WHEN ARRAY_LENGTH($3::INTEGER[], 1) > 0 THEN
+          "PlaceCategory".category_id = ANY($3::INTEGER[])
         ELSE TRUE
       END
   )
@@ -34,12 +34,10 @@ func FindAllPlaces() string {
   WHERE 
     (
       -- 初回リクエスト時またはカーソル条件に該当するデータをフィルタリング
-      ($1::UUID IS NULL OR "Place".id > $1::UUID) OR 
-      ("Place".id = $1::UUID AND ($2::UUID IS NULL OR "Media".id > $2::UUID))
+      ($1::UUID IS NULL OR "Media".id > $1::UUID) 
     )
   ORDER BY
-    "Place".id ASC,
     "Media".id ASC
-  LIMIT $3::INTEGER;
+  LIMIT $2::INTEGER;
   `
 }

@@ -20,7 +20,6 @@ type PlaceMedia struct {
 
 type NextCursor struct {
 	Distance float64 `json:"distance"` // カーソル用の距離
-	PID      string  `json:"pid"`      // カーソル用のPlace ID
 	MID      string  `json:"mid"`      // カーソル用のMedia ID
 }
 

@@ -10,7 +10,7 @@ import (
 type PlaceUseCase struct{}
 
 func (u *PlaceUseCase) GetPlaces(
-	cursorPID, cursorMID string,
+	cursorMID string,
 	limit int,
 	categoryIds []int,
 ) (*model.PlacesResponse, error) {
@@ -18,7 +18,7 @@ func (u *PlaceUseCase) GetPlaces(
 	repo := &repository.PlaceRepository{}
 
 	// リポジトリからデータ取得
-	response, err := repo.FindAll(cursorPID, cursorMID, limit, categoryIds)
+	response, err := repo.FindAll(cursorMID, limit, categoryIds)
 	if err != nil {
 		return nil, err
 	}
@@ -75,14 +75,14 @@ func (u *PlaceUseCase) GetPlacesNearBySpots(id string, lon, lat float64, limit i
 
 func (u *PlaceUseCase) GetPlacesBaseQuery(
 	keywords []string,
-	cursorPID, cursorMID string,
+	cursorMID string,
 	limit int,
 ) (*model.PlacesResponse, error) {
 	// リポジトリインスタンスの作成
 	repo := &repository.PlaceRepository{}
 
 	// リポジトリからデータ取得
-	response, err := repo.FindPlacesBaseQuery(keywords, cursorPID, cursorMID, limit)
+	response, err := repo.FindPlacesBaseQuery(keywords, cursorMID, limit)
 	if err != nil {
 		return nil, err
 	}

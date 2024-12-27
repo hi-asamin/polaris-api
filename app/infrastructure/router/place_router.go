@@ -18,7 +18,6 @@ func PlaceRouter(g *gin.RouterGroup) {
 	placeHandler := &handler.PlaceHandler{}
 
 	g.GET("/places", func(c *gin.Context) {
-		cursorPID := c.Query("cursorPID") // カーソルのPlace ID
 		cursorMID := c.Query("cursorMID") // カーソルのMedia ID
 		limitStr := c.Query("limit")      // リミット件数
 
@@ -38,7 +37,7 @@ func PlaceRouter(g *gin.RouterGroup) {
 		}
 
 		// ハンドラー呼び出し
-		response, err := placeHandler.GetPlaces(cursorPID, cursorMID, limitStr, categoryIds)
+		response, err := placeHandler.GetPlaces(cursorMID, limitStr, categoryIds)
 		if err != nil {
 			// エラー処理を共通関数に委譲
 			if appErr, ok := err.(*domain.AppError); ok {

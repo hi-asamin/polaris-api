@@ -16,12 +16,11 @@ func SearchRouter(g *gin.RouterGroup) {
 
 	g.GET("/search", func(c *gin.Context) {
 		keywords := c.Query("keywords")   // 検索ワード
-		cursorPID := c.Query("cursorPID") // カーソルのPlace ID
 		cursorMID := c.Query("cursorMID") // カーソルのMedia ID
 		limitStr := c.Query("limit")      // リミット件数
 
 		// ハンドラー呼び出し
-		response, err := placeHandler.GetPlacesBaseQuery(keywords, cursorPID, cursorMID, limitStr)
+		response, err := placeHandler.GetPlacesBaseQuery(keywords, cursorMID, limitStr)
 		if err != nil {
 			// エラー処理を共通関数に委譲
 			if appErr, ok := err.(*domain.AppError); ok {

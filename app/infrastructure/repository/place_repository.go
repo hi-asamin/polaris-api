@@ -19,7 +19,7 @@ import (
 type PlaceRepository struct{}
 
 func (r *PlaceRepository) FindAll(
-	cursorPID, cursorMID string,
+	cursorMID string,
 	limit int,
 	categoryIds []int,
 ) (*model.PlacesResponse, error) {
@@ -29,13 +29,12 @@ func (r *PlaceRepository) FindAll(
 	places := []model.PlaceMedia{}
 
 	// 空文字列を NULL に変換
-	cursorPIDValue := utils.EmptyStringToNull(cursorPID)
 	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
 
 	// SQLファイルを読み込み
 	sqlQuery := sql.FindAllPlaces()
 	// クエリで `LIMIT+1` のレコードを取得
-	err := db.Raw(sqlQuery, cursorPIDValue, cursorMIDValue, limit+1, categoryIds).Scan(&places).Error
+	err := db.Raw(sqlQuery, cursorMIDValue, limit+1, categoryIds).Scan(&places).Error
 	if err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}
@@ -47,7 +46,6 @@ func (r *PlaceRepository) FindAll(
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
 		nextCursor = &model.NextCursor{
-			PID: lastPlace.PID,
 			MID: lastPlace.MID,
 		}
 
@@ -192,7 +190,6 @@ func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, li
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
 		nextCursor = &model.NextCursor{
 			Distance: lastPlace.Distance,
-			PID:      lastPlace.PID,
 			MID:      lastPlace.MID,
 		}
 
@@ -211,7 +208,7 @@ func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, li
 
 func (r *PlaceRepository) FindPlacesBaseQuery(
 	keywords []string,
-	cursorPID, cursorMID string,
+	cursorMID string,
 	limit int,
 ) (*model.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
@@ -220,13 +217,12 @@ func (r *PlaceRepository) FindPlacesBaseQuery(
 	places := []model.PlaceMedia{}
 
 	// 空文字列を NULL に変換
-	cursorPIDValue := utils.EmptyStringToNull(cursorPID)
 	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
 
 	// 動的な ILIKE 条件を構築
 	ilikeConditions := []string{}
-	params := []interface{}{limit, cursorPIDValue, cursorMIDValue}
-	paramIndex := 4
+	params := []interface{}{limit, cursorMIDValue}
+	paramIndex := 3
 
 	for _, word := range keywords {
 		ilikeConditions = append(ilikeConditions, fmt.Sprintf(`(
@@ -240,7 +236,6 @@ func (r *PlaceRepository) FindPlacesBaseQuery(
 
 	// ILIKE条件を結合
 	whereClause := strings.Join(ilikeConditions, " AND ")
-	log.Printf("%s\n", whereClause)
 
 	// SQLクエリを動的に構築
 	query := fmt.Sprintf(sql.FindPlacesBaseQuery(), whereClause)
@@ -258,7 +253,6 @@ func (r *PlaceRepository) FindPlacesBaseQuery(
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
 		nextCursor = &model.NextCursor{
-			PID: lastPlace.PID,
 			MID: lastPlace.MID,
 		}
 
