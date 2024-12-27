@@ -51,3 +51,20 @@ func (r *S3Repository) UploadImage(file *multipart.FileHeader, placeID, userID s
 	fileNameWithoutExt := filename[:len(filename)-len(filepath.Ext(filename))]
 	return fileNameWithoutExt, nil
 }
+
+// DeleteMediaはS3からメディアファイル（画像・動画）を削除します
+func (r *S3Repository) DeleteMedia(key string) error {
+	s3client := infrastructure.GetS3Client()
+	bucketName := infrastructure.GetS3BucketName()
+
+	// S3からファイルを削除
+	_, err := s3client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: &bucketName,
+		Key:    &key,
+	})
+	if err != nil {
+		return domain.Wrap(err, 500, "S3からメディアファイル削除時にエラー発生")
+	}
+
+	return nil
+}

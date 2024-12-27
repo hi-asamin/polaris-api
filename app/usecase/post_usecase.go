@@ -51,10 +51,33 @@ func (u *PostUseCase) NewPost(userID, placeID, body string, files []*multipart.F
 }
 
 func (u *PostUseCase) DeletePost(postID string) error {
+	s3Repo := &repository.S3Repository{}
+	mediaRepo := &repository.MediaRepository{}
 	postRepo := &repository.PostRepository{}
 
+	// 投稿に紐づくメディアを削除
+	medias, err := mediaRepo.FindByPostID(postID)
+	if err != nil {
+		return err
+	}
+
+	// メディアをS3から削除
+	for _, media := range medias {
+		key := media.MediaURL
+		if media.MediaType == "image" {
+			key = key + ".webp"
+		}
+		//else if media.MediaType == "video" {
+		//	key = key + "_compressed.mp4"
+		//}
+		err = s3Repo.DeleteMedia(key)
+		if err != nil {
+			return err
+		}
+	}
+
 	// 投稿を削除
-	err := postRepo.DeletePost(postID)
+	err = postRepo.DeletePost(postID)
 	if err != nil {
 		return err
 	}
