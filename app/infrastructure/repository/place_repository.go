@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"gorm.io/gorm"
@@ -88,13 +87,9 @@ func (r *PlaceRepository) SearchPlacesBaseQuery(
 
 	// ILIKE条件を結合
 	whereClause := strings.Join(ilikeConditions, " AND ")
-	log.Printf("%s\n", whereClause)
 
 	// SQLクエリを動的に構築
 	query := fmt.Sprintf(sql.SearchPlacesBaseQuery(), whereClause)
-	log.Printf("%s\n", query)
-
-	log.Printf("%s\n", params)
 
 	// クエリを実行して結果を取得
 	err := db.Raw(query, params...).Scan(&places).Error
