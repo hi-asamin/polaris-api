@@ -216,7 +216,7 @@ func (r *PlaceRepository) FindPlacesByNameWithMedia(
 
 	// キーワードの有無で処理を分岐
 	var whereClause string
-	params := []interface{}{limit, cursorMIDValue}
+	params := []interface{}{limit + 1, cursorMIDValue}
 
 	if len(keywords) > 0 {
 		// 動的な ILIKE 条件を構築
