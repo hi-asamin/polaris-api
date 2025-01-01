@@ -2,7 +2,7 @@ package model
 
 type PlacesResponse struct {
 	PlaceMedia []PlaceMedia `json:"places"`     // 場所とメディア情報
-	NextCursor *NextCursor  `json:"nextCursor"` // 次のカーソル情報
+	NextCursor string       `json:"nextCursor"` // 次のカーソル情報
 }
 
 // PlaceMedia は場所のメディア情報を表すレスポンスDTO
@@ -16,11 +16,6 @@ type PlaceMedia struct {
 	Type     string  `json:"type"`                  // メディアの種類
 	Alt      *string `json:"alt"`                   // 代替テキスト（省略可能）
 	Distance float64 `json:"distance"`              // 距離（キロメートル単位）
-}
-
-type NextCursor struct {
-	Distance float64 `json:"distance"` // カーソル用の距離
-	MID      string  `json:"mid"`      // カーソル用のMedia ID
 }
 
 // SearchPlace は検索結果を表すレスポンスDTO

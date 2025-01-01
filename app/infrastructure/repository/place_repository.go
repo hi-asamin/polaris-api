@@ -39,14 +39,12 @@ func (r *PlaceRepository) FindAll(
 	}
 
 	// `hasNextPage` フラグと `nextCursor` を初期化
-	var nextCursor *model.NextCursor = nil
+	var nextCursor string = ""
 
 	// 検索結果が `limit+1` 件の場合、次のカーソルを設定
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
-		nextCursor = &model.NextCursor{
-			MID: lastPlace.MID,
-		}
+		nextCursor = lastPlace.MID
 
 		// リストの最後の要素を削除して `limit` 件にする
 		places = places[:limit]
@@ -178,15 +176,12 @@ func (r *PlaceRepository) FindNearBySpots(excludeID, cursorMID string, lon, lat 
 	}
 
 	// `hasNextPage` フラグと `nextCursor` を初期化
-	var nextCursor *model.NextCursor = nil
+	var nextCursor string = ""
 
 	// 検索結果が `limit+1` 件の場合、次のカーソルを設定
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
-		nextCursor = &model.NextCursor{
-			Distance: lastPlace.Distance,
-			MID:      lastPlace.MID,
-		}
+		nextCursor = lastPlace.MID
 
 		// リストの最後の要素を削除して `limit` 件にする
 		places = places[:limit]
@@ -250,14 +245,12 @@ func (r *PlaceRepository) FindPlacesByNameWithMedia(
 	}
 
 	// 次のカーソル情報を初期化
-	var nextCursor *model.NextCursor = nil
+	var nextCursor string = ""
 
 	// 検索結果が `limit+1` 件の場合、次のカーソルを設定
 	if len(places) > limit {
 		lastPlace := places[limit] // `limit+1` 番目の要素が次のカーソル情報
-		nextCursor = &model.NextCursor{
-			MID: lastPlace.MID,
-		}
+		nextCursor = lastPlace.MID
 
 		// リストの最後の要素を削除して `limit` 件にする
 		places = places[:limit]
