@@ -28,7 +28,6 @@ func FindPlacesBaseQuery() string {
     ($2::UUID IS NULL OR "Media".id > $2::UUID) 
   )
   ORDER BY
-    "Place".id ASC,
     "Media".id ASC
   LIMIT $1::INTEGER;
   `

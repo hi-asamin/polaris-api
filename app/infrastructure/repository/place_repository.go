@@ -61,7 +61,7 @@ func (r *PlaceRepository) FindAll(
 	return response, nil
 }
 
-func (r *PlaceRepository) SearchPlacesBaseQuery(
+func (r *PlaceRepository) FindPlacesByName(
 	keywords []string,
 	lon, lat float64,
 ) ([]model.SearchPlace, error) {
@@ -201,7 +201,7 @@ func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, li
 	return response, nil
 }
 
-func (r *PlaceRepository) FindPlacesBaseQuery(
+func (r *PlaceRepository) FindPlacesByNameWithMedia(
 	keywords []string,
 	cursorMID string,
 	limit int,

@@ -48,7 +48,7 @@ func (h *PlaceHandler) NewPlace(req *model.CreatePlaceRequest) error {
 	return nil
 }
 
-func (h *PlaceHandler) GetPlacesByName(q, lonStr, latStr string) ([]model.SearchPlace, error) {
+func (h *PlaceHandler) GetSuggestPlaces(q, lonStr, latStr string) ([]model.SearchPlace, error) {
 	// 検索ワードが空の場合は空配列を返却する
 	if q == "" {
 		return []model.SearchPlace{}, nil
@@ -71,7 +71,7 @@ func (h *PlaceHandler) GetPlacesByName(q, lonStr, latStr string) ([]model.Search
 	}
 
 	u := &usecase.PlaceUseCase{}
-	places, err := u.GetPlacesByName(keywords, lon, lat)
+	places, err := u.GetSuggestPlaces(keywords, lon, lat)
 	if err != nil {
 		return nil, err
 	}
@@ -134,10 +134,21 @@ func (h *PlaceHandler) GetPlacesBaseQuery(
 	keywords, cursorMID, limitStr string,
 ) (*model.PlacesResponse, error) {
 	// クエリパラメータの検証と変換
+	// 検索ワードが空の場合は空配列を返却する
+	if keywords == "" {
+		return &model.PlacesResponse{
+			PlaceMedia: []model.PlaceMedia{},
+			NextCursor: nil,
+		}, nil
+	}
+
 	// キーワードをスペースで分割
 	words := strings.Fields(keywords)
 	if len(words) == 0 {
-		return nil, domain.New(400, "検索キーワードが空です")
+		return &model.PlacesResponse{
+			PlaceMedia: []model.PlaceMedia{},
+			NextCursor: nil,
+		}, nil
 	}
 
 	var err error

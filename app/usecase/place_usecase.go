@@ -26,9 +26,9 @@ func (u *PlaceUseCase) GetPlaces(
 	return response, nil
 }
 
-func (u *PlaceUseCase) GetPlacesByName(keywords []string, lon, lat float64) ([]model.SearchPlace, error) {
+func (u *PlaceUseCase) GetSuggestPlaces(keywords []string, lon, lat float64) ([]model.SearchPlace, error) {
 	repo := &repository.PlaceRepository{}
-	places, err := repo.SearchPlacesBaseQuery(keywords, lon, lat)
+	places, err := repo.FindPlacesByName(keywords, lon, lat)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (u *PlaceUseCase) GetPlacesBaseQuery(
 	repo := &repository.PlaceRepository{}
 
 	// リポジトリからデータ取得
-	response, err := repo.FindPlacesBaseQuery(keywords, cursorMID, limit)
+	response, err := repo.FindPlacesByNameWithMedia(keywords, cursorMID, limit)
 	if err != nil {
 		return nil, err
 	}

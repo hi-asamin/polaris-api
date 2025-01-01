@@ -39,7 +39,7 @@ func SearchRouter(g *gin.RouterGroup) {
 		q := c.Query("q")
 		lonStr := c.Query("lon")
 		latStr := c.Query("lat")
-		places, err := placeHandler.GetPlacesByName(q, lonStr, latStr)
+		places, err := placeHandler.GetSuggestPlaces(q, lonStr, latStr)
 		if err != nil {
 			// エラー処理を共通関数に委譲
 			if appErr, ok := err.(*domain.AppError); ok {
