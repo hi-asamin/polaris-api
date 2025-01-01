@@ -30,8 +30,13 @@ func FindNearBySpots() string {
       $3
     )
     AND "Place".id != $4 -- 指定された場所IDを除外
+    AND
+    (
+      -- カーソル条件
+      ($5::UUID IS NULL OR "Media".id > $5::UUID) 
+    )
   ORDER BY
-    distance ASC
-  LIMIT $5;
+    "Media".id ASC
+  LIMIT $6;
   `
 }

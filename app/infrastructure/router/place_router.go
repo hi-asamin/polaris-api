@@ -108,10 +108,11 @@ func PlaceRouter(g *gin.RouterGroup) {
 		id := c.Param("id")
 		lonStr := c.Query("lon")
 		latStr := c.Query("lat")
+		cursorMID := c.Query("cursorMID")
 		limitStr := c.Query("limit")
 
 		// ハンドラー呼び出し
-		response, err := placeHandler.GetPlacesNearBySpots(id, lonStr, latStr, limitStr)
+		response, err := placeHandler.GetPlacesNearBySpots(id, lonStr, latStr, cursorMID, limitStr)
 		if err != nil {
 			// エラー処理を共通関数に委譲
 			if appErr, ok := err.(*domain.AppError); ok {

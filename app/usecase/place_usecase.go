@@ -62,10 +62,10 @@ func (u *PlaceUseCase) CreatePlace(req *model.CreatePlaceRequest) error {
 	return nil
 }
 
-func (u *PlaceUseCase) GetPlacesNearBySpots(id string, lon, lat float64, limit int) (*model.PlacesResponse, error) {
+func (u *PlaceUseCase) GetPlacesNearBySpots(id, cursorMID string, lon, lat float64, limit int) (*model.PlacesResponse, error) {
 	repo := &repository.PlaceRepository{}
 
-	places, err := repo.FindNearBySpots(id, lon, lat, limit)
+	places, err := repo.FindNearBySpots(id, cursorMID, lon, lat, limit)
 	if err != nil {
 		return nil, err
 	}

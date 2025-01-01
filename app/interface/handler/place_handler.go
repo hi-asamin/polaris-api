@@ -95,7 +95,7 @@ func (h *PlaceHandler) GetPlacesByID(id string) (*models.Place, error) {
 	return place, nil
 }
 
-func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string) (*model.PlacesResponse, error) {
+func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, cursorMID, limitStr string) (*model.PlacesResponse, error) {
 	u := &usecase.PlaceUseCase{}
 
 	// IDの存在チェック
@@ -122,7 +122,7 @@ func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string)
 		}
 	}
 
-	places, err := u.GetPlacesNearBySpots(id, lon, lat, limit)
+	places, err := u.GetPlacesNearBySpots(id, cursorMID, lon, lat, limit)
 	if err != nil {
 		return nil, err
 	}

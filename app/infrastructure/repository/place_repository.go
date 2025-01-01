@@ -162,17 +162,17 @@ func (r *PlaceRepository) CreatePlace(req *model.CreatePlaceRequest) error {
 	})
 }
 
-func (r *PlaceRepository) FindNearBySpots(excludeID string, lon, lat float64, limit int) (*model.PlacesResponse, error) {
+func (r *PlaceRepository) FindNearBySpots(excludeID, cursorMID string, lon, lat float64, limit int) (*model.PlacesResponse, error) {
+	db := infrastructure.GetDatabaseConnection()
 	// 検索結果を格納するスライスを初期化
 	places := []model.PlaceMedia{}
-
 	nearPlaceDistance := constants.NearPlaceDistance
-
-	db := infrastructure.GetDatabaseConnection()
+	// 空文字列を NULL に変換
+	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
 
 	// SQLファイルを読み込み
 	sqlQuery := sql.FindNearBySpots()
-	err := db.Raw(sqlQuery, lon, lat, nearPlaceDistance, excludeID, limit+1).Scan(&places).Error
+	err := db.Raw(sqlQuery, lon, lat, nearPlaceDistance, excludeID, cursorMIDValue, limit+1).Scan(&places).Error
 	if err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}
