@@ -133,23 +133,8 @@ func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, limitStr string)
 func (h *PlaceHandler) GetPlacesBaseQuery(
 	keywords, cursorMID, limitStr string,
 ) (*model.PlacesResponse, error) {
-	// クエリパラメータの検証と変換
-	// 検索ワードが空の場合は空配列を返却する
-	if keywords == "" {
-		return &model.PlacesResponse{
-			PlaceMedia: []model.PlaceMedia{},
-			NextCursor: nil,
-		}, nil
-	}
-
 	// キーワードをスペースで分割
 	words := strings.Fields(keywords)
-	if len(words) == 0 {
-		return &model.PlacesResponse{
-			PlaceMedia: []model.PlaceMedia{},
-			NextCursor: nil,
-		}, nil
-	}
 
 	var err error
 	limit := 20 // デフォルト値

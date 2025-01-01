@@ -214,23 +214,31 @@ func (r *PlaceRepository) FindPlacesByNameWithMedia(
 	// 空文字列を NULL に変換
 	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
 
-	// 動的な ILIKE 条件を構築
-	ilikeConditions := []string{}
+	// キーワードの有無で処理を分岐
+	var whereClause string
 	params := []interface{}{limit, cursorMIDValue}
-	paramIndex := 3
 
-	for _, word := range keywords {
-		ilikeConditions = append(ilikeConditions, fmt.Sprintf(`(
-			"Place".name ILIKE $%d::TEXT OR
-			"Place".description ILIKE $%d::TEXT OR
-			"Place".city ILIKE $%d::TEXT
-		)`, paramIndex, paramIndex+1, paramIndex+2))
-		params = append(params, "%"+word+"%", "%"+word+"%", "%"+word+"%")
-		paramIndex += 3
+	if len(keywords) > 0 {
+		// 動的な ILIKE 条件を構築
+		ilikeConditions := []string{}
+		paramIndex := 3
+
+		for _, word := range keywords {
+			ilikeConditions = append(ilikeConditions, fmt.Sprintf(`(
+				"Place".name ILIKE $%d::TEXT OR
+				"Place".description ILIKE $%d::TEXT OR
+				"Place".city ILIKE $%d::TEXT
+			)`, paramIndex, paramIndex+1, paramIndex+2))
+			params = append(params, "%"+word+"%", "%"+word+"%", "%"+word+"%")
+			paramIndex += 3
+		}
+
+		// ILIKE条件を結合
+		whereClause = strings.Join(ilikeConditions, " AND ")
+	} else {
+		// キーワードがない場合は常に真となる条件を設定
+		whereClause = "TRUE"
 	}
-
-	// ILIKE条件を結合
-	whereClause := strings.Join(ilikeConditions, " AND ")
 
 	// SQLクエリを動的に構築
 	query := fmt.Sprintf(sql.FindPlacesBaseQuery(), whereClause)
