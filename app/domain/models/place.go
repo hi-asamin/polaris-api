@@ -15,7 +15,7 @@ type Place struct {
 	Geometry     string   `gorm:"type:geometry(Point, 4326)" json:"geometry"`
 
 	Posts           []Post  `json:"posts"`
-	Media           []Media `json:"media"`
+	Media           []Media `json:"medias"`
 	Events          []Event
 	PlaceCategories []PlaceCategory
 	PlaceScenes     []PlaceScene
