@@ -11,7 +11,7 @@ import (
 	"polaris-api/domain/models"
 	"polaris-api/infrastructure"
 	"polaris-api/infrastructure/repository/sql"
-	"polaris-api/interface/model"
+	"polaris-api/interface/types"
 	"polaris-api/utils"
 )
 
@@ -21,11 +21,11 @@ func (r *PlaceRepository) FindAll(
 	cursorMID string,
 	limit int,
 	categoryIds []int,
-) (*model.PlacesResponse, error) {
+) (*types.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 検索結果を格納するスライスを初期化
-	places := []model.PlaceMedia{}
+	places := []types.PlaceMedia{}
 
 	// 空文字列を NULL に変換
 	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
@@ -51,7 +51,7 @@ func (r *PlaceRepository) FindAll(
 	}
 
 	// レスポンスDTOを構築
-	response := &model.PlacesResponse{
+	response := &types.PlacesResponse{
 		PlaceMedia: places,
 		NextCursor: nextCursor,
 	}
@@ -62,11 +62,11 @@ func (r *PlaceRepository) FindAll(
 func (r *PlaceRepository) FindPlacesByName(
 	keywords []string,
 	lon, lat float64,
-) ([]model.SearchPlace, error) {
+) ([]types.SearchPlace, error) {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 検索結果を格納するスライスを初期化
-	places := []model.SearchPlace{}
+	places := []types.SearchPlace{}
 
 	// 動的な ILIKE 条件を構築
 	ilikeConditions := []string{}
@@ -119,7 +119,7 @@ func createGeometry(lat, lon *float64) string {
 	return ""
 }
 
-func (r *PlaceRepository) CreatePlace(req *model.CreatePlaceRequest) error {
+func (r *PlaceRepository) CreatePlace(req *types.CreatePlaceRequest) error {
 	db := infrastructure.GetDatabaseConnection()
 
 	// Placeモデルに変換
@@ -160,10 +160,10 @@ func (r *PlaceRepository) CreatePlace(req *model.CreatePlaceRequest) error {
 	})
 }
 
-func (r *PlaceRepository) FindNearBySpots(excludeID, cursorMID string, lon, lat float64, limit int) (*model.PlacesResponse, error) {
+func (r *PlaceRepository) FindNearBySpots(excludeID, cursorMID string, lon, lat float64, limit int) (*types.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
 	// 検索結果を格納するスライスを初期化
-	places := []model.PlaceMedia{}
+	places := []types.PlaceMedia{}
 	nearPlaceDistance := constants.NearPlaceDistance
 	// 空文字列を NULL に変換
 	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
@@ -188,7 +188,7 @@ func (r *PlaceRepository) FindNearBySpots(excludeID, cursorMID string, lon, lat 
 	}
 
 	// レスポンスDTOを構築
-	response := &model.PlacesResponse{
+	response := &types.PlacesResponse{
 		PlaceMedia: places,
 		NextCursor: nextCursor,
 	}
@@ -200,11 +200,11 @@ func (r *PlaceRepository) FindPlacesByNameWithMedia(
 	keywords []string,
 	cursorMID string,
 	limit int,
-) (*model.PlacesResponse, error) {
+) (*types.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
 
 	// 検索結果を格納するスライスを初期化
-	places := []model.PlaceMedia{}
+	places := []types.PlaceMedia{}
 
 	// 空文字列を NULL に変換
 	cursorMIDValue := utils.EmptyStringToNull(cursorMID)
@@ -257,7 +257,7 @@ func (r *PlaceRepository) FindPlacesByNameWithMedia(
 	}
 
 	// レスポンスDTOを構築
-	response := &model.PlacesResponse{
+	response := &types.PlacesResponse{
 		PlaceMedia: places,
 		NextCursor: nextCursor,
 	}

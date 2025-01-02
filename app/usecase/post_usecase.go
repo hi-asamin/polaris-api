@@ -3,7 +3,7 @@ package usecase
 import (
 	"mime/multipart"
 	"polaris-api/infrastructure/repository"
-	"polaris-api/interface/model"
+	"polaris-api/interface/types"
 )
 
 type PostUseCase struct{}
@@ -19,7 +19,7 @@ func (u *PostUseCase) NewPost(userID, placeID, body string, files []*multipart.F
 		return err
 	}
 
-	var fileInfos []model.FileInfo
+	var fileInfos []types.FileInfo
 	// S3にファイルをアップロード
 	for _, file := range files {
 		fileNameWithoutExt, err := s3Repo.UploadImage(file, placeID, userID)
@@ -34,7 +34,7 @@ func (u *PostUseCase) NewPost(userID, placeID, body string, files []*multipart.F
 			fileType = "video"
 		}
 
-		fileInfos = append(fileInfos, model.FileInfo{
+		fileInfos = append(fileInfos, types.FileInfo{
 			FileName: fileNameWithoutExt,
 			FileType: fileType,
 		})

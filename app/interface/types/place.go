@@ -1,4 +1,4 @@
-package model
+package types
 
 type PlacesResponse struct {
 	PlaceMedia []PlaceMedia `json:"places"`     // 場所とメディア情報
