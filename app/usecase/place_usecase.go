@@ -53,8 +53,31 @@ func (u *PlaceUseCase) GetPlaceByID(id string) (*models.Place, error) {
 
 func (u *PlaceUseCase) CreatePlace(req *types.CreatePlaceRequest) error {
 	repo := &repository.PlaceRepository{}
+	locationServiceRepo := &repository.LocationServiceRepository{}
 
-	err := repo.CreatePlace(req)
+	address := ""
+	if req.State != "" {
+		address += req.State
+	}
+	if req.City != "" {
+		address += req.City
+	}
+	if req.AddressLine1 != "" {
+		address += req.AddressLine1
+	}
+	if req.AddressLine2 != nil {
+		address += *req.AddressLine2
+	}
+
+	geometry, err := locationServiceRepo.GeocodeAddress(address)
+	if err != nil {
+		return err
+	}
+
+	req.Latitude = &geometry.Latitude
+	req.Longitude = &geometry.Longitude
+
+	err = repo.CreatePlace(req)
 	if err != nil {
 		return err
 	}
