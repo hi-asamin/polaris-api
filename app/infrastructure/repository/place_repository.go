@@ -103,7 +103,7 @@ func (r *PlaceRepository) FindByID(id string) (*models.Place, error) {
 
 	var place models.Place
 	if err := db.Preload("Media").Preload("Posts").Select(
-		"id, name, description, country, state, city, zip_code, address_line1, address_line2, latitude, longitude",
+		"id, name, description, country, state, city, zip_code, address_line1, address_line2, latitude, longitude, links",
 	).First(&place, "id = ?", id).Error; err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}
@@ -135,6 +135,7 @@ func (r *PlaceRepository) CreatePlace(req *types.CreatePlaceRequest) error {
 		Latitude:     req.Latitude,
 		Longitude:    req.Longitude,
 		Geometry:     createGeometry(req.Latitude, req.Longitude),
+		Links:        req.Links,
 	}
 
 	return db.Transaction(func(tx *gorm.DB) error {

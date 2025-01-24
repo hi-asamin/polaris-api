@@ -1,5 +1,7 @@
 package types
 
+import "gorm.io/datatypes"
+
 type PlacesResponse struct {
 	PlaceMedia []PlaceMedia `json:"places"`     // 場所とメディア情報
 	NextCursor string       `json:"nextCursor"` // 次のカーソル情報
@@ -31,15 +33,16 @@ type SearchPlace struct {
 }
 
 type CreatePlaceRequest struct {
-	Name         string   `json:"name" binding:"required"`
-	Description  *string  `json:"description"`
-	Country      string   `json:"country" binding:"required"`
-	State        string   `json:"state" binding:"required"`
-	City         string   `json:"city" binding:"required"`
-	ZipCode      *string  `json:"zipCode"`
-	AddressLine1 string   `json:"addressLine1" binding:"required"`
-	AddressLine2 *string  `json:"addressLine2"`
-	Latitude     *float64 `json:"latitude"`
-	Longitude    *float64 `json:"longitude"`
-	CategoryIds  []int    `json:"categoryIds"`
+	Name         string         `json:"name" binding:"required"`
+	Description  *string        `json:"description"`
+	Country      string         `json:"country" binding:"required"`
+	State        string         `json:"state" binding:"required"`
+	City         string         `json:"city" binding:"required"`
+	ZipCode      *string        `json:"zipCode"`
+	AddressLine1 string         `json:"addressLine1" binding:"required"`
+	AddressLine2 *string        `json:"addressLine2"`
+	Latitude     *float64       `json:"latitude"`
+	Longitude    *float64       `json:"longitude"`
+	CategoryIds  []int          `json:"categoryIds"`
+	Links        datatypes.JSON `json:"links"`
 }
