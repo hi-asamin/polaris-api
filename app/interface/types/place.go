@@ -36,11 +36,12 @@ type CreatePlaceRequest struct {
 	Name         string         `json:"name" binding:"required"`
 	Description  *string        `json:"description"`
 	Country      string         `json:"country" binding:"required"`
+	ZipCode      *string        `json:"zipCode"`
 	State        string         `json:"state" binding:"required"`
 	City         string         `json:"city" binding:"required"`
-	ZipCode      *string        `json:"zipCode"`
 	AddressLine1 string         `json:"addressLine1" binding:"required"`
 	AddressLine2 *string        `json:"addressLine2"`
+	PhoneNumber  *string        `json:"phoneNumber"`
 	Latitude     *float64       `json:"latitude"`
 	Longitude    *float64       `json:"longitude"`
 	CategoryIds  []int          `json:"categoryIds"`
