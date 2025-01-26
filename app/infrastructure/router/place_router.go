@@ -103,6 +103,31 @@ func PlaceRouter(g *gin.RouterGroup) {
 		c.JSON(http.StatusOK, place)
 	})
 
+	g.PUT("/places/:id", func(c *gin.Context) {
+		// パスパラメータからIDを取得
+		id := c.Param("id")
+
+		// JSONボディを受け取る
+		var payload types.PlaceUpdatePayload
+		if err := c.ShouldBindJSON(&payload); err != nil {
+			handler.HandleError(c, domain.New(400, "Invalid request body"))
+			return
+		}
+
+		err := placeHandler.UpdatePlace(id, &payload)
+		if err != nil {
+			// エラー処理を共通関数に委譲
+			if appErr, ok := err.(*domain.AppError); ok {
+				handler.HandleError(c, appErr)
+			} else {
+				handler.HandleError(c, domain.New(500, "Unknown error occurred"))
+			}
+			return
+		}
+
+		c.JSON(http.StatusNoContent, nil)
+	})
+
 	g.GET("/places/:id/nearby", func(c *gin.Context) {
 		// パスパラメータからIDを取得
 		id := c.Param("id")

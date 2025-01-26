@@ -45,3 +45,19 @@ type CreatePlaceRequest struct {
 	CategoryIds  []int          `json:"categoryIds"`
 	Links        datatypes.JSON `json:"links"`
 }
+
+// PlaceUpdatePayload: 更新可能なカラムのみ定義したリクエスト用の構造体
+// ここでポインタ(*string等)にすることで、nilの場合は「更新リクエストなし」と判断できる
+type PlaceUpdatePayload struct {
+	Name         *string        `json:"name,omitempty"`
+	Description  *string        `json:"description,omitempty"`
+	Country      *string        `json:"country,omitempty"`
+	ZipCode      *string        `json:"zipCode,omitempty"`
+	State        *string        `json:"state,omitempty"`
+	City         *string        `json:"city,omitempty"`
+	AddressLine1 *string        `json:"addressLine1,omitempty"`
+	AddressLine2 *string        `json:"addressLine2,omitempty"`
+	PhoneNumber  *string        `json:"phoneNumber,omitempty"`
+	CategoryIds  []int          `json:"categoryIds,omitempty"`
+	Links        datatypes.JSON `json:"links,omitempty"`
+}

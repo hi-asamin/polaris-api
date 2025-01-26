@@ -82,6 +82,15 @@ func (u *PlaceUseCase) CreatePlace(req *types.CreatePlaceRequest) error {
 	return nil
 }
 
+func (u *PlaceUseCase) UpdatePlace(id string, updateFields map[string]interface{}) error {
+	repo := &repository.PlaceRepository{}
+	err := repo.UpdateFieldsByID(id, updateFields)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u *PlaceUseCase) GetPlacesNearBySpots(id, cursorMID string, lon, lat float64, limit int) (*types.PlacesResponse, error) {
 	repo := &repository.PlaceRepository{}
 

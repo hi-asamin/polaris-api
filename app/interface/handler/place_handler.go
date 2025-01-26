@@ -95,6 +95,59 @@ func (h *PlaceHandler) GetPlacesByID(id string) (*models.Place, error) {
 	return place, nil
 }
 
+func (h *PlaceHandler) UpdatePlace(id string, payload *types.PlaceUpdatePayload) error {
+	u := &usecase.PlaceUseCase{}
+
+	// IDの存在チェック
+	if id == "" {
+		return domain.New(400, "IDが空です")
+	}
+
+	// 更新したいカラムだけを map へ詰め込む
+	updateFields := map[string]interface{}{}
+
+	if payload.Name != nil {
+		updateFields["name"] = payload.Name
+	}
+	if payload.Description != nil {
+		updateFields["description"] = *payload.Description
+	}
+	if payload.Country != nil {
+		updateFields["country"] = payload.Country
+	}
+	if payload.State != nil {
+		updateFields["state"] = payload.State
+	}
+	if payload.City != nil {
+		updateFields["city"] = payload.City
+	}
+	if payload.ZipCode != nil {
+		updateFields["zip_code"] = payload.ZipCode
+	}
+	if payload.AddressLine1 != nil {
+		updateFields["address_line1"] = payload.AddressLine1
+	}
+	if payload.AddressLine2 != nil {
+		updateFields["address_line2"] = payload.AddressLine2
+	}
+	if payload.PhoneNumber != nil {
+		updateFields["phone_number"] = payload.PhoneNumber
+	}
+	if payload.CategoryIds != nil {
+		updateFields["category_ids"] = payload.CategoryIds
+	}
+	if payload.Links != nil {
+		updateFields["links"] = payload.Links
+	}
+
+	err := u.UpdatePlace(id, updateFields)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (h *PlaceHandler) GetPlacesNearBySpots(id, lonStr, latStr, cursorMID, limitStr string) (*types.PlacesResponse, error) {
 	u := &usecase.PlaceUseCase{}
 

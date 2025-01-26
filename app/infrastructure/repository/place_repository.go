@@ -162,6 +162,23 @@ func (r *PlaceRepository) CreatePlace(req *types.CreatePlaceRequest, geometry *t
 	})
 }
 
+func (r *PlaceRepository) UpdateFieldsByID(id string, updates map[string]interface{}) error {
+	db := infrastructure.GetDatabaseConnection()
+
+	// 更新対象のPlaceが存在するか確認
+	var place models.Place
+	if err := db.Where("id = ?", id).First(&place).Error; err != nil {
+		return domain.Wrap(err, 404, "指定された場所が見つかりません")
+	}
+
+	// 更新処理を実行
+	if err := db.Model(&place).Updates(updates).Error; err != nil {
+		return domain.Wrap(err, 500, "場所の更新に失敗しました")
+	}
+
+	return nil
+}
+
 func (r *PlaceRepository) FindNearBySpots(excludeID, cursorMID string, lon, lat float64, limit int) (*types.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
 	// 検索結果を格納するスライスを初期化
