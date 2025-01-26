@@ -74,10 +74,7 @@ func (u *PlaceUseCase) CreatePlace(req *types.CreatePlaceRequest) error {
 		return err
 	}
 
-	req.Latitude = &geometry.Latitude
-	req.Longitude = &geometry.Longitude
-
-	err = repo.CreatePlace(req)
+	err = repo.CreatePlace(req, geometry)
 	if err != nil {
 		return err
 	}

@@ -42,8 +42,6 @@ type CreatePlaceRequest struct {
 	AddressLine1 string         `json:"addressLine1" binding:"required"`
 	AddressLine2 *string        `json:"addressLine2"`
 	PhoneNumber  *string        `json:"phoneNumber"`
-	Latitude     *float64       `json:"latitude"`
-	Longitude    *float64       `json:"longitude"`
 	CategoryIds  []int          `json:"categoryIds"`
 	Links        datatypes.JSON `json:"links"`
 }

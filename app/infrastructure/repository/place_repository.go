@@ -119,7 +119,7 @@ func createGeometry(lat, lon *float64) string {
 	return ""
 }
 
-func (r *PlaceRepository) CreatePlace(req *types.CreatePlaceRequest) error {
+func (r *PlaceRepository) CreatePlace(req *types.CreatePlaceRequest, geometry *types.Geometry) error {
 	db := infrastructure.GetDatabaseConnection()
 
 	// Placeモデルに変換
@@ -133,9 +133,9 @@ func (r *PlaceRepository) CreatePlace(req *types.CreatePlaceRequest) error {
 		AddressLine1: req.AddressLine1,
 		AddressLine2: req.AddressLine2,
 		PhoneNumber:  req.PhoneNumber,
-		Latitude:     req.Latitude,
-		Longitude:    req.Longitude,
-		Geometry:     createGeometry(req.Latitude, req.Longitude),
+		Latitude:     &geometry.Latitude,
+		Longitude:    &geometry.Longitude,
+		Geometry:     createGeometry(&geometry.Latitude, &geometry.Longitude),
 		Links:        req.Links,
 	}
 
