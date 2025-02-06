@@ -62,7 +62,7 @@ func PlaceRouter(g *gin.RouterGroup) {
 			if appErr, ok := err.(*domain.AppError); ok {
 				handler.HandleError(c, appErr)
 			} else {
-				handler.HandleError(c, domain.New(500, "Unknown error occurred"))
+				handler.HandleError(c, domain.New(500, "バリデーションエラー"))
 			}
 			return
 		}
