@@ -9,6 +9,7 @@ type Media struct {
 	MediaType  string    `gorm:"size:10;not null" json:"mediaType"`
 	MediaURL   string    `gorm:"size:500;not null" json:"mediaUrl"`
 	AltText    *string   `gorm:"size:255" json:"altText"`
+	CreatedAt  time.Time `gorm:"type:timestamp;default:current_timestamp" json:"createdAt"`
 	UploadedAt time.Time `gorm:"type:timestamp;default:current_timestamp" json:"uploadedAt"`
 
 	Post  Post  `gorm:"foreignKey:PostID" json:"-"`

@@ -27,7 +27,7 @@ func (r *S3Repository) UploadImage(file *multipart.FileHeader, placeID, userID s
 	}
 	defer src.Close()
 
-	// ファイル名をユニークにする
+	// ファイル名をユニークにする(場所ID/ユーザID/タイムスタンプ + 拡張子)
 	filename := fmt.Sprintf("%s/%s/%d%s", placeID, userID, time.Now().UnixNano(), filepath.Ext(file.Filename))
 	contentType := file.Header.Get("Content-Type")
 
