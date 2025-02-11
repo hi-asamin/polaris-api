@@ -11,7 +11,7 @@ type Place struct {
 	Name         string         `gorm:"size:255;uniqueIndex:idx_place_name_state_city_line1" json:"name"`
 	Description  *string        `json:"description"`
 	Country      string         `gorm:"size:50;not null" json:"country"`
-	ZipCode      *string        `gorm:"size:10" json:"zipcode"`
+	ZipCode      *string        `gorm:"size:10" json:"zipCode"`
 	State        string         `gorm:"size:50;not null;uniqueIndex:idx_place_name_state_city_line1" json:"state"`
 	City         string         `gorm:"size:150;uniqueIndex:idx_place_name_state_city_line1" json:"city"`
 	AddressLine1 string         `gorm:"size:500;not null;uniqueIndex:idx_place_name_state_city_line1" json:"addressLine1"`
