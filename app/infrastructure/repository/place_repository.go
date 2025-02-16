@@ -21,6 +21,7 @@ func (r *PlaceRepository) FindAll(
 	cursorMID string,
 	limit int,
 	categoryIds []int,
+	lat, lon *float64,
 ) (*types.PlacesResponse, error) {
 	db := infrastructure.GetDatabaseConnection()
 
@@ -33,7 +34,7 @@ func (r *PlaceRepository) FindAll(
 	// SQLファイルを読み込み
 	sqlQuery := sql.FindAllPlaces()
 	// クエリで `LIMIT+1` のレコードを取得
-	err := db.Raw(sqlQuery, cursorMIDValue, limit+1, categoryIds).Scan(&places).Error
+	err := db.Raw(sqlQuery, cursorMIDValue, limit+1, categoryIds, lat, lon).Scan(&places).Error
 	if err != nil {
 		return nil, domain.Wrap(err, 500, "データベースアクセス時にエラー発生")
 	}

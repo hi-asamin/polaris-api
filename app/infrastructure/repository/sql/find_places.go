@@ -12,6 +12,16 @@ func FindAllPlaces() string {
           "PlaceCategory".category_id = ANY($3::INTEGER[])
         ELSE TRUE
       END
+      AND
+      CASE
+        WHEN $4::FLOAT IS NOT NULL AND $5::FLOAT IS NOT NULL THEN
+          ST_DWithin(
+            geometry,
+            ST_SetSRID(ST_MakePoint($5, $4), 4326)::geography,
+            5000  -- 5km = 5000m
+          )
+        ELSE TRUE
+      END
   )
   SELECT 
     "Place".id AS pid,

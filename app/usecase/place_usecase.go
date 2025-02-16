@@ -13,12 +13,13 @@ func (u *PlaceUseCase) GetPlaces(
 	cursorMID string,
 	limit int,
 	categoryIds []int,
+	lat, lon *float64,
 ) (*types.PlacesResponse, error) {
 	// リポジトリインスタンスの作成
 	repo := &repository.PlaceRepository{}
 
 	// リポジトリからデータ取得
-	response, err := repo.FindAll(cursorMID, limit, categoryIds)
+	response, err := repo.FindAll(cursorMID, limit, categoryIds, lat, lon)
 	if err != nil {
 		return nil, err
 	}

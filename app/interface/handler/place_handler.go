@@ -15,6 +15,7 @@ type PlaceHandler struct{}
 func (h *PlaceHandler) GetPlaces(
 	cursorMID, limitStr string,
 	categoryIds []int,
+	latStr, lonStr string,
 ) (*types.PlacesResponse, error) {
 	var err error
 	// クエリパラメータの検証と変換
@@ -26,9 +27,23 @@ func (h *PlaceHandler) GetPlaces(
 		}
 	}
 
+	var lat, lon *float64
+	if latStr != "" && lonStr != "" {
+		latFloat, err := strconv.ParseFloat(latStr, 64)
+		if err != nil {
+			return nil, domain.Wrap(err, 400, "緯度の形式が不正です")
+		}
+		lonFloat, err := strconv.ParseFloat(lonStr, 64)
+		if err != nil {
+			return nil, domain.Wrap(err, 400, "経度の形式が不正です")
+		}
+		lat = &latFloat
+		lon = &lonFloat
+	}
+
 	// Usecaseの呼び出し
 	u := &usecase.PlaceUseCase{}
-	response, err := u.GetPlaces(cursorMID, limit, categoryIds)
+	response, err := u.GetPlaces(cursorMID, limit, categoryIds, lat, lon)
 	if err != nil {
 		return nil, err
 	}
