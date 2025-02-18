@@ -44,7 +44,7 @@ func FindAllPlaces() string {
   WHERE 
     (
       -- 初回リクエスト時またはカーソル条件に該当するデータをフィルタリング
-      ($1::UUID IS NULL OR "Media".id > $1::UUID) 
+      ($1::UUID IS NULL OR "Media".id >= $1::UUID) 
     )
   ORDER BY
     "Media".id ASC
