@@ -33,7 +33,7 @@ func FindNearBySpots() string {
     AND
     (
       -- カーソル条件
-      ($5::UUID IS NULL OR "Media".id > $5::UUID) 
+      ($5::UUID IS NULL OR "Media".id >= $5::UUID) 
     )
   ORDER BY
     "Media".id ASC
